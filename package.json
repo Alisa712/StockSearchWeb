@@ -1,15 +1,16 @@
 {
-  "name": "testserver",
+  "name": "my-stock-search",
   "version": "1.0.0",
   "description": "This is a test server for Class 571",
+  "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js"
   },
-  "author": "Qing Lan",
-  "license": "ISC",
+  "author": "Shuhui He",
   "dependencies": {
     "express": "^4.16.2",
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "xml2js": "^0.4.19"
   }
 }
