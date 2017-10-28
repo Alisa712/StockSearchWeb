@@ -1,9 +1,10 @@
 var express = require('express');
+var http = require('http');
 var parseString = require('xml2js').parseString;
 var request = require('request');
 
 var app = express();
-var PORT = 80;
+var PORT = process.env.PORT || 3000;
 
 // stock quote
 app.get('/stock/query',function(req, res){
@@ -42,6 +43,7 @@ app.get('/stock/news',function(req, res){
 });
 
 // autocomplete
+// Param: input
 app.get('/autocomplete', function(req, res){
 	url = 'http://dev.markitondemand.com/MODApis/Api/v2/Lookup/json';
 	request({url:url, qs:req.query}, function(err, response, body) {
@@ -50,4 +52,6 @@ app.get('/autocomplete', function(req, res){
 })
 
 console.log("Server starting on PORT: "+PORT);
-app.listen(PORT)
+//app.listen(PORT)
+var server = http.createServer(app);
+server.listen(PORT);
