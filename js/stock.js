@@ -1,17 +1,17 @@
 var preURL = "http://localhost:3000";
 
-var app = angular.module("myModule", ['ngAnimate','ngSanitize','mgcrea.ngStrap']);
+var app = angular.module("myModule", ['ngAnimate','ngSanitize','ngMaterial']);
 app.controller("myController", mainControl);
 
 function mainControl($scope, $http, $interval){
 	$scope.init = function(){
 
 	};
-	$scope.selectedStock = '';
+	// $scope.selectedStock = '';
 
-  	$scope.getStock = function(viewValue) {
+  	$scope.getStock = function(searchText) {
   		URL = preURL+"/autocomplete"
-    	var params = {input: viewValue};
+    	var params = {input: searchText};
     	return $http.get(URL, {params: params})
     	.then(function(res) {
     	console.log(res);
@@ -22,3 +22,14 @@ function mainControl($scope, $http, $interval){
     });
   };
 }
+
+// function AppController($scope, $http) {
+//   $scope.query = function(searchText) {
+//     return $http
+//       .get(BACKEND_URL + '/items/' + searchText)
+//       .then(function(data) {
+//         // Map the response object to the data object.
+//         return data;
+//       });
+//   };
+// }
