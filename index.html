@@ -18,7 +18,9 @@
   <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
-  <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
+  <script src="http://mgcrea.github.io/angular-strap/dist/angular-strap.js" data-semver="v2.3.8"></script>
+  <script src="http://mgcrea.github.io/angular-strap/dist/angular-strap.tpl.js" data-semver="v2.3.8"></script>
+<!--   <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script> -->
   <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 
   <link href="./css/style.css" rel="stylesheet">
@@ -36,12 +38,12 @@
             <h5>Enter Stock Ticker Symbol:<span class="text-danger">*</span></h5>
           </div>
           <div class="col-sm-6">
-            <input type="number" class="form-control" ng-model="myInterval">
+            <!-- <input type="number" class="form-control" ng-model="myInterval"> -->
+            <input type="text" class="form-control" ng-model="selectedStock" data-animation="am-flip-x" bs-options="symbol.show for symbol in getStock($viewValue)" placeholder="e.g. AAPL" bs-typeahead>
           </div>
           <div class="col-sm-3">
             <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i>Get Quote</button>
-            <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-refresh"></i>Clear</button>
-            
+            <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-refresh"></i>Clear</button>           
           </div>
         </div>
         

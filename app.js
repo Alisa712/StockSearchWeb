@@ -6,6 +6,12 @@ var request = require('request');
 var app = express();
 var PORT = process.env.PORT || 3000;
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 // stock quote
 app.get('/stock/query',function(req, res){
 	//console.log(req.query);
