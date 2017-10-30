@@ -1,5 +1,13 @@
-.jumbotron{
+.well{
 	background-color: white;
 	border-radius: 10px !important;	
 	padding-top: 16px;
 }
+/*div {
+  transition: all linear 0.5s;
+  position: relative;
+}
+
+.ng-hide {
+  left: 500px;
+}*/
