@@ -3,17 +3,25 @@ var preURL = "http://localhost:3000";
 var app = angular.module("myModule", ['ngAnimate','ngSanitize','ngMaterial']);
 app.controller("myController", mainControl);
 
-function mainControl($scope, $http, $interval){
+function mainControl($scope, $http, $interval, $window){
 	$scope.init = function(){
 		$scope.disabled = true;
 		$scope.showDetail = false;
+		$scope.quoted = false;
 		$scope.records = ["Symbol", "Stock Price", "Change (Change Percent)", "Volume"];
 		$scope.sortChoices = ["Default", "Symbol", "Stock Price", "Change", "Change Percent", "Volume"];
 		$scope.selectSortBy = $scope.sortChoices[0];
 		$scope.orderChoices = ["Ascending", "Descending"];
 		$scope.selectOrderBy = $scope.orderChoices[0];
-
-
+		$scope.expression = "cs"; //current stock
+		$scope.stockDetails = {};
+		// $window.localStorage.removeItem("favorite");
+		if ($window.localStorage.getItem("favorite") === null){
+			$window.localStorage.setItem('favorite', JSON.stringify($scope.stockDetails));
+		} else {
+			$scope.stockDetails = JSON.parse($window.localStorage.getItem("favorite"));
+		}
+		console.log($scope.stockDetails);
 	};
 
 	$scope.clear = function() {
@@ -23,6 +31,7 @@ function mainControl($scope, $http, $interval){
 	$scope.getQuote = function() {
 		console.log($scope.searchText);
 		$scope.showDetail = true;
+		$scope.quoted = true;
 	};
 
 	$scope.searchTextChange = function(text) {
@@ -35,8 +44,37 @@ function mainControl($scope, $http, $interval){
 		}
 		// console.log("disabled", $scope.disabled);
 	}
-	$scope.checkDefault = function() {
-		return $scope.selectSortBy == "Default";
+
+	// favorite stocks
+	$scope.changeFav = function(stockName) {
+		if ($scope.stockDetails[stockName]) {
+			delete $scope.stockDetails[stockName];
+			$window.localStorage.setItem('favorite', JSON.stringify($scope.stockDetails));
+		} else {
+			$scope.stockDetails[stockName] = {};
+			$scope.refresh();
+		}
+		
+	}
+
+	$scope.refresh = function() {
+		Object.keys($scope.stockDetails).forEach(function(stock, index) {
+			URL = preURL+"/stock/query";
+			var params = {symbol: stock, function: "TIME_SERIES_DAILY"};
+			$http.get(URL, {params: params}).then(function(res) {
+				console.log(res);
+				var currentDate = res.data["Meta Data"]["3. Last Refreshed"];
+				var temp = res.data["Time Series (Daily)"][currentDate];
+				var submit = {};
+				submit['symbol'] = stock;
+				submit['close'] = temp["4. close"];
+				submit['volume'] = temp["5. volume"];
+				submit['change'] = (temp["4. close"] - temp["1. open"]).toFixed(2);
+				submit['changePercent'] = (submit['change']/temp["1. open"]).toFixed(2);
+				$scope.stockDetails[stock] = submit;
+				$window.localStorage.setItem('favorite', JSON.stringify($scope.stockDetails));
+			});
+		});
 	}
 
   	$scope.getStock = function(searchText) {

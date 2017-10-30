@@ -3,6 +3,11 @@
 	border-radius: 10px !important;	
 	padding-top: 16px;
 }
+.greyLine{
+	
+	color: grey !important;	
+	height: 1px;
+}
 /*div {
   transition: all linear 0.5s;
   position: relative;
