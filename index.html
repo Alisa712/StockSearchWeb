@@ -16,7 +16,10 @@
 
 
 
-
+  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+  <link href="./css/style.css" rel="stylesheet">
   <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
@@ -25,20 +28,19 @@
     <!-- Angular Material Library -->
   <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
 
-  <script
+ <!--  <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous"></script>
-  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+  crossorigin="anonymous"></script> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  
   <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
 <!-- <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script> -->
 <!--   <script src="http://mgcrea.github.io/angular-strap/dist/angular-strap.js" data-semver="v2.3.8"></script>
   <script src="http://mgcrea.github.io/angular-strap/dist/angular-strap.tpl.js" data-semver="v2.3.8"></script> -->
 <!--   <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script> -->
-  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
-  <link href="./css/style.css" rel="stylesheet">
+
   <script src="./js/stock.js"></script>
 
 </head>
@@ -67,9 +69,6 @@
             <span>{{ item.show }}</span>
           </md-autocomplete>
           <h5 ng-show="disabled">Please enter a stock ticker symbol</h5>
-
-
-
 <!--             <input type="text" class="form-control" ng-model="selectedStock" data-animation="am-flip-x" bs-options="symbol.show for symbol in getStock($viewValue)" placeholder="e.g. AAPL" bs-typeahead> -->
           </div>
           <div class="col-sm-3">
@@ -120,13 +119,13 @@
           </div>
         </div>
         <table class="table table-striped">
-          <thead>
+          <!-- <thead> -->
             <tr>
-              <th ng-repeat="x in records">{{x}}</th>
+              <td ng-repeat="x in records"><b>{{x}}</b></td>
               <th></th>
             </tr>
-          </thead>
-          <tbody>
+          <!-- </thead> -->
+          <!-- <tbody> -->
             <tr ng-repeat="stock in stockDetails">
               <td>{{stock.symbol}}</td>
               <td>{{stock.close}}</td>
@@ -134,7 +133,7 @@
               <td>{{stock.volume}}</td>
               <td><button ng-click="changeFav(stock.symbol)" class="btn btn-default">Delete</button></td>
             </tr>
-          </tbody>
+          <!-- </tbody> -->
         </table>
       </div>
       </div>
