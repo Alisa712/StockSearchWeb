@@ -155,9 +155,9 @@
           <li role="presentation" ng-class="expression=='nf' ? 'active' : ''" ng-click="expression='nf'"><a href="#"><h5><i class="glyphicon glyphicon-link"></i>&nbsp News Feeds</h5></a></li>    
         </ul>
         <hr class="greyLine">
-        <div ng-show="expression=='cs'">
+        <div ng-show="expression=='cs'"> <!-- Tab for Current Stock -->
           <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-6"> <!-- Left Hand side -->
               <div class="row">
                 <div class="col-sm-3">
                   <h5>Stock Details</h5>
@@ -169,12 +169,14 @@
                 </div>
               </div>
             </div>
-            <div class="col-sm-6">             
-            </div>
+            <div class="col-sm-6"> <!-- Right Hand side -->          
+            </div> 
           </div>
         </div>
-        <div ng-show="expression=='hc'"></div>
-        <div ng-show="expression=='nf'"></div>       
+        <div ng-show="expression=='hc'"> <!-- Tab for Historical Chart -->
+        </div>
+        <div ng-show="expression=='nf'"> <!-- Tab for News Feed -->
+        </div>       
       </div>
       </div>
     </div>
