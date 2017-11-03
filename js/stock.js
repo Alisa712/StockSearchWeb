@@ -29,30 +29,27 @@ function mainControl($scope, $http, $interval, $window){
 	};
 
 	$scope.getQuote = function() {
-		console.log($scope.searchText);
+		$scope.quoteStockName = $scope.searchText;
 		$scope.showDetail = true;
-		$scope.quoted = true;
+		$scope.quoted = false;
 
-		Object.keys($scope.stockDetails).forEach(function(stock, index) {
-			URL = preURL+"/stock/query";
-			var params = {outputsize: "full", symbol: stock, function: "TIME_SERIES_DAILY"};
-			$http.get(URL, {params: params}).then(function(res) {
-				console.log(res);
-				var currentDateTemp = res.data["Meta Data"]["3. Last Refreshed"];
-				var currentDate = currentDateTemp.substring(0, 9); //yyyy-mm-dd
-				var temp = res.data["Time Series (Daily)"][currentDate];
-				var submit = {};
-				submit['symbol'] = stock;
-				submit['close'] = temp["4. close"];
-				submit['volume'] = temp["5. volume"];
-				submit['change'] = (temp["4. close"] - temp["1. open"]).toFixed(2);
-				submit['changePercent'] = (submit['change']/temp["1. open"]).toFixed(2);
-				submit['timestamp'] = currentDateTemp; //EDT?
-				submit['open'] = temp["1. open"];
-				
-				$scope.stockDetails[stock] = submit;
-				// $window.localStorage.setItem('favorite', JSON.stringify($scope.stockDetails));
-			});
+		URL = preURL+"/stock/query";
+		var params = {symbol: $scope.quoteStockName, function: "TIME_SERIES_DAILY"};
+		$http.get(URL, {params: params}).then(function(res) {
+			console.log(res);
+			var currentDateTemp = res.data["Meta Data"]["3. Last Refreshed"];
+			var currentDate = currentDateTemp.substring(0, 10); //yyyy-mm-dd
+			var temp = res.data["Time Series (Daily)"][currentDate];
+			var submit = {};
+			submit['symbol'] = $scope.quoteStockName;
+			submit['close'] = temp["4. close"];
+			submit['volume'] = temp["5. volume"];
+			submit['change'] = (temp["4. close"] - temp["1. open"]).toFixed(2);
+			submit['changePercent'] = (submit['change']/temp["1. open"]).toFixed(2);
+			submit['timestamp'] = currentDateTemp; //EDT?
+			submit['open'] = temp["1. open"];
+			$scope.csDetails = submit;
+			$scope.quoted = true;
 		});
 
 			// var newestTemp = res.data["Meta Data"]["3. Last Refreshed"];
@@ -94,11 +91,11 @@ function mainControl($scope, $http, $interval, $window){
 	$scope.refresh = function() {
 		Object.keys($scope.stockDetails).forEach(function(stock, index) {
 			URL = preURL+"/stock/query";
-			var params = {outputsize: "full", symbol: stock, function: "TIME_SERIES_DAILY"};
+			var params = {symbol: stock, function: "TIME_SERIES_DAILY"};
 			$http.get(URL, {params: params}).then(function(res) {
 				console.log(res);
 				var currentDateTemp = res.data["Meta Data"]["3. Last Refreshed"];
-				var currentDate = currentDateTemp.substring(0, 9); //yyyy-mm-dd
+				var currentDate = currentDateTemp.substring(0, 10); //yyyy-mm-dd
 				var temp = res.data["Time Series (Daily)"][currentDate];
 				var submit = {};
 				submit['symbol'] = stock;
