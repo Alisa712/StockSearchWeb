@@ -216,7 +216,41 @@
                 </table>            
               </div>
           </div>
-
+          <div ng-show="quoted">
+            <table class="table table-striped">
+              <tr>
+                <td><b>Stock Ticker Symbol</b></td>
+                <td>{{csDetails.symbol}}</td>
+              </tr>
+              <tr>
+                <td><b>Last Price</b></td>
+                <td>{{csDetails.lastPrice | number : 2}}</td>
+              </tr>
+              <tr>
+                <td><b>Change (Change Percent)</b></td>
+                <td style="color: {{csDetails.change > 0 ? upColor : downColor}}">{{csDetails.change}}&nbsp({{csDetails.changePercent}}%)<img ng-src="{{csDetails.change > 0 ? './img/Up.png' : './img/Down.png'}}" width="20"></td>
+              </tr>
+              <tr>
+                <td><b>Timestamp</b></td>
+                <td>{{csDetails.timestamp}}</td>
+              </tr>
+              <tr>
+                <td><b>Open</b></td>
+                <td>{{csDetails.open | number : 2}}</td>
+              </tr>
+              <tr>
+                <td><b>Close</b></td>
+                <td>{{csDetails.close | number : 2}}</td>
+              </tr>
+              <tr>
+                <td><b>Day's Range</b></td>
+                <td>{{csDetails.low | number : 2}}&nbsp-&nbsp{{csDetails.high | number : 2}}</td>
+              </tr>
+              <tr>
+                <td><b>Volume</b></td>
+                <td>{{ csDetails.volume | number : fractionSize}}</td>
+              </tr>             
+            </table>
           </div>
         </div>
         <div ng-show="expression=='hc'"> <!-- Tab for Historical Chart -->
