@@ -122,7 +122,6 @@
           <!-- <thead> -->
             <tr>
               <td ng-repeat="x in records"><b>{{x}}</b></td>
-              <th></th>
             </tr>
           <!-- </thead> -->
           <!-- <tbody> -->
@@ -165,7 +164,7 @@
                 <div class="col-sm-6"></div>
                 <div class="col-sm-3">
                   <button class="btn btn-default" ng-click="changeFav(searchText)" ng-disabled="!quoted"><i ng-class="!stockDetails[searchText] ? 'glyphicon glyphicon-star-empty' : 'glyphicon glyphicon-star'"></i></button>
-                  <button class="btn btn-default" ng-disabled="!quoted"><img src="./img/facebook.png" width=15 height=15></img></button>
+                  <button class="btn btn-default" ng-disabled="!quoted"><img ng-src="./img/facebook.png" width=15 height=15></button>
                 </div>
               </div>
             </div>
@@ -181,7 +180,42 @@
             </div>
           </div>
           <div ng-show="quoted">
-            {{csDetails}}
+            <table class="table table-striped">
+              <tr>
+                <td><b>Stock Ticker Symbol</b></td>
+                <td>{{csDetails.symbol}}</td>
+              </tr>
+              <tr>
+                <td><b>Last Price</b></td>
+                <td>{{csDetails.lastPrice | number : 2}}</td>
+              </tr>
+              <tr>
+                <td><b>Change (Change Percent)</b></td>
+                <td style="color: {{csDetails.change > 0 ? upColor : downColor}}">{{csDetails.change}}&nbsp({{csDetails.changePercent}}%)<img ng-src="{{csDetails.change > 0 ? './img/Up.png' : './img/Down.png'}}" width="8%" height="8%"></td>
+              </tr>
+              <tr>
+                <td><b>Timestamp</b></td>
+                <td>{{csDetails.timestamp}}</td>
+              </tr>
+              <tr>
+                <td><b>Open</b></td>
+                <td>{{csDetails.open | number : 2}}</td>
+              </tr>
+              <tr>
+                <td><b>Close</b></td>
+                <td>{{csDetails.close | number : 2}}</td>
+              </tr>
+              <tr>
+                <td><b>Day's Range</b></td>
+                <td>{{csDetails.low | number : 2}}&nbsp-&nbsp{{csDetails.high | number : 2}}</td>
+              </tr>
+              <tr>
+                <td><b>Volume</b></td>
+                <td>{{ csDetails.volume | number : fractionSize}}</td>
+              </tr>             
+            </table>
+
+            
           </div>
           </div>
           </div>
