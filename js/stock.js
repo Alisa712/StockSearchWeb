@@ -8,6 +8,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		$scope.disabled = true;
 		$scope.showDetail = false;
 		$scope.quoted = false;
+		$scope.indiCalled = false;
 		$scope.records = ["Symbol", "Stock Price", "Change (Change Percent)", "Volume"];
 		$scope.sortChoices = ["Default", "Symbol", "Stock Price", "Change", "Change Percent", "Volume"];
 		$scope.priceIndicators = ["Price", "SMA", "EMA", "STOCH", "RSI", "ADX", "CCI", "BBANDS", "MACD"];
@@ -16,6 +17,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		$scope.orderChoices = ["Ascending", "Descending"];
 		$scope.selectOrderBy = $scope.orderChoices[0];
 		$scope.expression = "cs"; //current stock
+		$scope.chartsExpression = "Price";
 		$scope.stockDetails = {};
 		$scope.downColor = "red";
 		$scope.upColor = "green";
@@ -27,6 +29,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			$scope.stockDetails = JSON.parse($window.localStorage.getItem("favorite"));
 		}
 		console.log($scope.stockDetails);
+		console.log($scope.chartsExpression);
 	};
 
 	$scope.clear = function() {
@@ -76,15 +79,6 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			$scope.csDetails = submit;
 			$scope.quoted = true;
 		});
-
-		
-
-		// for (var i = 1; i < $scope.priceIndicators.length; i++) {
-		// 	var paramsIndicator = {symbol: $scope.quoteStockName, function: $scope.priceIndicators[i], interval: "daily", time_period: 10, series_type: "close"};
-		// 	$http.get(URL, {params: paramsIndicator}).then(function(res) {
-		// 		$scope.chartsInfo.push(res.data);
-		// 	});					
-		// }
 		
 		var startIndex = 1; //introduce delay to optimize API call frequency
 		var seqRequest = function(startIndex){
@@ -92,7 +86,8 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 				var paramsIndicator = {symbol: $scope.quoteStockName, function: $scope.priceIndicators[startIndex], interval: "daily", time_period: 10, series_type: "close"};
 				$http.get(URL, {params: paramsIndicator}).then(function(res) {
 					$scope.chartsInfo[$scope.priceIndicators[startIndex]] = res.data;
-					$timeout(seqRequest(startIndex+1), 200);	
+					$timeout(seqRequest(startIndex+1), 200);
+					$scope.indiCalled = true;	
 				});	
 			} else {
 				console.log($scope.chartsInfo);

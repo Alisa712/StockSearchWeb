@@ -121,6 +121,7 @@
         <table class="table table-striped">
             <tr>
               <td ng-repeat="x in records"><b>{{x}}</b></td>
+              <td></td>
             </tr>
             <tr ng-repeat="stock in stockDetails">
               <td>{{stock.symbol}}</td>
@@ -165,38 +166,29 @@
               </div>
             </div>
             <div class="col-sm-6">
+<!--               <ul class="nav nav-tabs">
+                <li  ng-repeat="indi in priceIndicators" role="presentation" ng-class="chartsExpression==indi ? 'active' : ''" ng-click="chartsExpression=indi"><a href="#">{{indi}}</a></li>
+              </ul> -->
                          
               <ul class="nav nav-tabs">
-                <li role="presentation" class="active"><a href="#">Price</a></li>
-                <li role="presentation" class="active"><a href="#">SMA</a></li>
-                <li role="presentation"><a href="#">EMA</a></li>
-                <li role="presentation"><a href="#">STOCH</a></li>
-                <li role="presentation"><a href="#">RSI</a></li>
-                <li role="presentation"><a href="#">ADX</a></li>
-                <li role="presentation"><a href="#">CCI</a></li>
-                <li role="presentation"><a href="#">BBANDS</a></li>
-                <li role="presentation"><a href="#">MACD</a></li>
+                <li role="presentation" ng-class="chartsExpression=='Price' ? 'active' : ''" ng-click="chartsExpression='Price'"><a href="#">Price</a></li>
+                <li role="presentation" ng-class="chartsExpression=='SMA' ? 'active' : ''" ng-click="chartsExpression='SMA'"><a href="#">SMA</a></li>
+                <li role="presentation" ng-class="chartsExpression=='EMA' ? 'active' : ''" ng-click="chartsExpression='EMA'"><a href="#">EMA</a></li>
+                <li role="presentation" ng-class="chartsExpression=='STOCH' ? 'active' : ''" ng-click="chartsExpression='STOCH'"><a href="#">STOCH</a></li>
+                <li role="presentation" ng-class="chartsExpression=='RSI' ? 'active' : ''" ng-click="chartsExpression='RSI'"><a href="#">RSI</a></li>
+                <li role="presentation" ng-class="chartsExpression=='ADX ? 'active' : ''" ng-click="chartsExpression='ADX'"><a href="#">ADX</a></li>
+                <li role="presentation" ng-class="chartsExpression=='CCI' ? 'active' : ''" ng-click="chartsExpression='CCI'"><a href="#">CCI</a></li>
+                <li role="presentation" ng-class="chartsExpression=='BBANDS' ? 'active' : ''" ng-click="chartsExpression='BBANDS'"><a href="#">BBANDS</a></li>
+                <li role="presentation" ng-class="chartsExpression=='MACD' ? 'active' : ''" ng-click="chartsExpression='MACD'"><a href="#">MACD</a></li>
               </ul>
 
-
-
-
-
-
-
-
-
-
-
-
-                                                                
             </div> 
           </div>
           <div class="row">
             <div class="col-sm-6">
             <div ng-hide="quoted">
             <br><br>
-            <div class="progress">
+            <div class="progress"><!-- left side progress bar -->
               <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
               </div>
             </div>
@@ -239,13 +231,16 @@
           </div>
           </div>
           <div class="col-sm-6">
-              <div ng-hide="quoted">
+              <div ng-hide="indiCalled">
               <br><br>               
-                <div class="progress">
+                <div class="progress"><!-- rigth side progress bar -->
                   <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
                   </div>
                 </div>
-              </div>              
+              </div>
+              <div ng-show="indiCalled"><!-- draw highcharts -->
+                
+              </div>             
           </div>
           </div>
         </div>
