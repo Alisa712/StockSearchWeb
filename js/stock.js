@@ -92,8 +92,8 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 				var paramsIndicator = {symbol: $scope.quoteStockName, function: $scope.priceIndicators[startIndex], interval: "daily", time_period: 10, series_type: "close"};
 				$http.get(URL, {params: paramsIndicator}).then(function(res) {
 					$scope.chartsInfo[$scope.priceIndicators[startIndex]] = res.data;
-				});
-				$timeout(seqRequest(startIndex+1), 200);			
+					$timeout(seqRequest(startIndex+1), 200);	
+				});	
 			} else {
 				console.log($scope.chartsInfo);
 			}
