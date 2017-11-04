@@ -10,14 +10,14 @@ function mainControl($scope, $http, $interval, $window){
 		$scope.quoted = false;
 		$scope.records = ["Symbol", "Stock Price", "Change (Change Percent)", "Volume"];
 		$scope.sortChoices = ["Default", "Symbol", "Stock Price", "Change", "Change Percent", "Volume"];
-		//$scope.leftTable = ["Stock Ticker Symbol", "Last Price", "Change (Change Percent)", ]
+		$scope.priceIndicators = ["Price", "SMA", "EMA", "STOCH", "RSI", "ADX", "CCI", "BBANDS", "MACD"];
+		$scope.chartsInfo = [];
 		$scope.selectSortBy = $scope.sortChoices[0];
 		$scope.orderChoices = ["Ascending", "Descending"];
 		$scope.selectOrderBy = $scope.orderChoices[0];
 		$scope.expression = "cs"; //current stock
 		$scope.stockDetails = {};
 		$scope.downColor = "red";
-		//$scope.downImg = "./img/Up.png";
 		$scope.upColor = "green";
 
 		// $window.localStorage.removeItem("favorite");
@@ -41,7 +41,7 @@ function mainControl($scope, $http, $interval, $window){
 		URL = preURL+"/stock/query";
 		var params = {symbol: $scope.quoteStockName, function: "TIME_SERIES_DAILY"};
 		$http.get(URL, {params: params}).then(function(res) {
-			console.log(res);
+			//console.log(res);
 			var timeSeriesDaily = [];
 			var timeSet = res.data["Time Series (Daily)"];
 
@@ -72,10 +72,19 @@ function mainControl($scope, $http, $interval, $window){
 				submit['close'] = previousDate["4. close"]; // today not closed yet
 				submit['timestamp'] = currentDateTemp + " EDT"; //EDT?
 			}
-
+			$scope.chartsInfo.push(res.data);
 			$scope.csDetails = submit;
 			$scope.quoted = true;
 		});
+
+		for (var i = 1; i < $scope.priceIndicators.length; i++) {
+			var paramsIndicator = {symbol: $scope.quoteStockName, function: $scope.priceIndicators[i], interval: "daily", time_period: 10, series_type: "close"};
+			$http.get(URL, {params: paramsIndicator}).then(function(res) {
+				$scope.chartsInfo.push(res.data);
+			});					
+		}
+		console.log($scope.chartsInfo);
+
 	};
 
 	$scope.searchTextChange = function(text) {
