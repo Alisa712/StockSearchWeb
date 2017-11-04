@@ -11,7 +11,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		$scope.records = ["Symbol", "Stock Price", "Change (Change Percent)", "Volume"];
 		$scope.sortChoices = ["Default", "Symbol", "Stock Price", "Change", "Change Percent", "Volume"];
 		$scope.priceIndicators = ["Price", "SMA", "EMA", "STOCH", "RSI", "ADX", "CCI", "BBANDS", "MACD"];
-		$scope.chartsInfo = [];
+		$scope.chartsInfo = {};
 		$scope.selectSortBy = $scope.sortChoices[0];
 		$scope.orderChoices = ["Ascending", "Descending"];
 		$scope.selectOrderBy = $scope.orderChoices[0];
@@ -72,7 +72,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 				submit['close'] = previousDate["4. close"]; // today not closed yet
 				submit['timestamp'] = currentDateTemp + " EDT"; //EDT?
 			}
-			$scope.chartsInfo.push(res.data);
+			$scope.chartsInfo["Price"] = res.data;
 			$scope.csDetails = submit;
 			$scope.quoted = true;
 		});
@@ -86,22 +86,19 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		// 	});					
 		// }
 		
-		var startIndex = 1;
+		var startIndex = 1; //introduce delay to optimize API call frequency
 		var seqRequest = function(startIndex){
 			if (startIndex + 1 <= $scope.priceIndicators.length) {
 				var paramsIndicator = {symbol: $scope.quoteStockName, function: $scope.priceIndicators[startIndex], interval: "daily", time_period: 10, series_type: "close"};
 				$http.get(URL, {params: paramsIndicator}).then(function(res) {
-					$scope.chartsInfo.push(res.data);
+					$scope.chartsInfo[$scope.priceIndicators[startIndex]] = res.data;
 				});
 				$timeout(seqRequest(startIndex+1), 200);			
+			} else {
+				console.log($scope.chartsInfo);
 			}
-	
-
 		}
-
 		$timeout(seqRequest(startIndex), 200);
-		console.log($scope.chartsInfo);
-
 	};
 
 	$scope.searchTextChange = function(text) {
