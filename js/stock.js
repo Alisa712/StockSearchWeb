@@ -13,6 +13,10 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		$scope.sortChoices = ["Default", "Symbol", "Stock Price", "Change", "Change Percent", "Volume"];
 		$scope.priceIndicators = ["Price", "SMA", "EMA", "STOCH", "RSI", "ADX", "CCI", "BBANDS", "MACD"];
 		$scope.chartsInfo = {};
+		$scope.datesCollection = [];
+		$scope.formattedDates =[];
+		$scope.closePrice = [];
+		$scope.volumeData = [];
 		$scope.selectSortBy = $scope.sortChoices[0];
 		$scope.orderChoices = ["Ascending", "Descending"];
 		$scope.selectOrderBy = $scope.orderChoices[0];
@@ -42,7 +46,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		$scope.quoted = false;
 
 		URL = preURL+"/stock/query";
-		var params = {symbol: $scope.quoteStockName, function: "TIME_SERIES_DAILY"};
+		var params = {symbol: $scope.quoteStockName, function: "TIME_SERIES_DAILY", outputsize: "full"};
 		$http.get(URL, {params: params}).then(function(res) {
 			//console.log(res);
 			var timeSeriesDaily = [];
@@ -50,8 +54,20 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 
 			angular.forEach(timeSet, function(value, key) {
 			  	this.push(value);
+			  	$scope.datesCollection.push(key);
 			}, timeSeriesDaily);
 
+			for (var i = 120; i >= 0; i--) {
+				var dates  = $scope.datesCollection[i];
+				var formatted = (dates.split('-').join('/')).substring(5,10);
+				$scope.formattedDates.push(formatted);
+				$scope.closePrice.push(timeSeriesDaily[i]["4. close"].toString());
+				$scope.volumeData.push(timeSeriesDaily[i]["5. volume"].toString());
+			}			
+
+			console.log($scope.formattedDates);
+			console.log(typeof $scope.closePrice);
+			console.log(typeof $scope.volumeData[3]);
 			var previousDate = timeSeriesDaily[1];
 			var currentDateTemp = res.data["Meta Data"]["3. Last Refreshed"];
 			var closedTime = "16:00:00"; 
@@ -94,7 +110,87 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			}
 		}
 		$timeout(seqRequest(startIndex), 200);
+		console.log($scope.datesCollection);
 	};
+
+	
+	$scope.changeIndi = function(indiName) {
+		$scope.chartsExpression = indiName;
+		if ($scope.chartsExpression == 'Price') {
+			$scope.drawPrice();
+		}		
+	}
+
+	$scope.drawPrice = function() {
+		var priceData = $scope.chartsInfo['Price'];
+		if (priceData) {
+				Highcharts.chart('chartsContainer', {
+			    chart: {
+			       //borderColor: '#D3D3D3',
+			       //borderWidth: 2
+			    },
+			    xAxis: {
+			        categories: $scope.formattedDates,
+			        //tickInterval: 5
+			    },
+			    title: {
+			        text: $scope.quoteStockName+" "+"Stock Price and Volume",
+			    },
+			    subtitle: {
+			        text: '<a href="https://www.alphavantage.co/" target="_blank">Source: Alpha Vantage</a>',       
+			        useHTML: true
+			    },
+			    yAxis: [{
+			    	
+			        title: {
+			            text: 'Stock Price'
+			        },
+			        //min: minValue * 0.9      
+			    }, {
+			        title: {
+			            text: 'Volume'
+			        },
+			        //max: volumeMax * 6,
+			        opposite: true
+			    }],
+			    legend: {
+			        //layout: 'vertical',
+			        //align: 'right',
+			        //verticalAlign: 'middle'
+			    },
+			    plotOptions: {
+			        area: {
+			        	tooltip:{
+			            	valueDecimals: 2
+			    		},
+			            marker: {
+			                enabled: false
+			            },
+			            //threshold: null		
+			        }       
+			    },
+			    series: [{
+			    	type: 'area',
+			    	name: 'Price',
+			        data: $scope.closePrice,
+			        //color: '#F37F81',
+			        yAxis: 0
+			    }, {
+			    	type: 'column',
+			    	name: 'Volume',
+			        data: $scope.volumeData,
+			        //color: '#FFFFFF',
+			        yAxis: 1
+
+			    }, ]
+			});			
+
+		} else {
+			//code to show error bar and message
+		}
+
+
+	}
 
 	$scope.searchTextChange = function(text) {
 		// console.log(text);
