@@ -61,13 +61,13 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 				var dates  = $scope.datesCollection[i];
 				var formatted = (dates.split('-').join('/')).substring(5,10);
 				$scope.formattedDates.push(formatted);
-				$scope.closePrice.push(timeSeriesDaily[i]["4. close"].toString());
-				$scope.volumeData.push(timeSeriesDaily[i]["5. volume"].toString());
+				$scope.closePrice.push(parseInt(timeSeriesDaily[i]["4. close"]));
+				$scope.volumeData.push(parseInt(timeSeriesDaily[i]["5. volume"]));
 			}			
 
 			console.log($scope.formattedDates);
-			console.log(typeof $scope.closePrice);
-			console.log(typeof $scope.volumeData[3]);
+			console.log($scope.closePrice);
+			console.log($scope.volumeData);
 			var previousDate = timeSeriesDaily[1];
 			var currentDateTemp = res.data["Meta Data"]["3. Last Refreshed"];
 			var closedTime = "16:00:00"; 
