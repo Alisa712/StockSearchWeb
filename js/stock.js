@@ -3,7 +3,7 @@ var preURL = "http://localhost:3000";
 var app = angular.module("myModule", ['ngAnimate','ngSanitize','ngMaterial']);
 app.controller("myController", mainControl);
 
-function mainControl($scope, $http, $interval, $window){
+function mainControl($scope, $http, $interval, $window, $timeout){
 	$scope.init = function(){
 		$scope.disabled = true;
 		$scope.showDetail = false;
@@ -77,12 +77,29 @@ function mainControl($scope, $http, $interval, $window){
 			$scope.quoted = true;
 		});
 
-		for (var i = 1; i < $scope.priceIndicators.length; i++) {
-			var paramsIndicator = {symbol: $scope.quoteStockName, function: $scope.priceIndicators[i], interval: "daily", time_period: 10, series_type: "close"};
-			$http.get(URL, {params: paramsIndicator}).then(function(res) {
-				$scope.chartsInfo.push(res.data);
-			});					
+		
+
+		// for (var i = 1; i < $scope.priceIndicators.length; i++) {
+		// 	var paramsIndicator = {symbol: $scope.quoteStockName, function: $scope.priceIndicators[i], interval: "daily", time_period: 10, series_type: "close"};
+		// 	$http.get(URL, {params: paramsIndicator}).then(function(res) {
+		// 		$scope.chartsInfo.push(res.data);
+		// 	});					
+		// }
+		
+		var startIndex = 1;
+		var seqRequest = function(startIndex){
+			if (startIndex + 1 <= $scope.priceIndicators.length) {
+				var paramsIndicator = {symbol: $scope.quoteStockName, function: $scope.priceIndicators[startIndex], interval: "daily", time_period: 10, series_type: "close"};
+				$http.get(URL, {params: paramsIndicator}).then(function(res) {
+					$scope.chartsInfo.push(res.data);
+				});
+				$timeout(seqRequest(startIndex+1), 200);			
+			}
+	
+
 		}
+
+		$timeout(seqRequest(startIndex), 200);
 		console.log($scope.chartsInfo);
 
 	};
