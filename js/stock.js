@@ -44,7 +44,8 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		$scope.quoteStockName = $scope.searchText;
 		$scope.showDetail = true;
 		$scope.quoted = false;
-
+		// $scope.chartsInfo = {"null", "null", "null", "null", "null", "null", "null", "null", "null"};
+		$scope.chartsInfo = {};
 		URL = preURL+"/stock/query";
 		var params = {symbol: $scope.quoteStockName, function: "TIME_SERIES_DAILY", outputsize: "full"};
 		$http.get(URL, {params: params}).then(function(res) {
@@ -64,8 +65,6 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 				$scope.closePrice.push(parseInt(timeSeriesDaily[i]["4. close"]));
 				$scope.volumeData.push(parseInt(timeSeriesDaily[i]["5. volume"]));
 			}			
-
-			console.log($scope.formattedDates);
 			console.log($scope.closePrice);
 			console.log($scope.volumeData);
 			var previousDate = timeSeriesDaily[1];
@@ -94,6 +93,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			$scope.chartsInfo["Price"] = res.data;
 			$scope.csDetails = submit;
 			$scope.quoted = true;
+			$scope.changeIndi($scope.chartsExpression);
 		});
 		
 		var startIndex = 1; //introduce delay to optimize API call frequency
@@ -118,13 +118,16 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		$scope.chartsExpression = indiName;
 		if ($scope.chartsExpression == 'Price') {
 			$scope.drawPrice();
+		} else {
+			//$scope.chartsExpression
+			$scope.drawIndi();
 		}		
 	}
 
 	$scope.drawPrice = function() {
 		var priceData = $scope.chartsInfo['Price'];
 		if (priceData) {
-				Highcharts.chart('chartsContainer', {
+				$scope.chart = Highcharts.chart('chartsContainer', {
 			    chart: {
 			       //borderColor: '#D3D3D3',
 			       //borderWidth: 2
@@ -188,9 +191,85 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		} else {
 			//code to show error bar and message
 		}
-
-
 	}
+
+	$scope.drawIndi = function() {
+		//$scope.chartsExpression = 'BBANDS';
+		var indiDataAll = [];
+		var dataSet = [];
+		var indiEntry = "Technical Analysis: "+$scope.chartsExpression;
+		if ($scope.chartsInfo[$scope.chartsExpression]) {
+			var indiData = $scope.chartsInfo[$scope.chartsExpression];
+			var indicatorName = indiData["2: Indicator"];
+			var tecAnalysis = indiData[indiEntry];
+			var indiKeys = Object.keys(tecAnalysis[$scope.datesCollection[0]]);
+			for (var i = 120; i >=0; i--) {
+				var indiDate = $scope.datesCollection[i]; //2017-11-03
+				var indiValues = tecAnalysis[indiDate];				
+				indiDataAll.push(indiValues);
+			}
+			var set = [];
+			for (var i = 0; i < indiKeys.length; i++) { //1-3
+				for (var j = 0; j < indiDataAll.length; j++) { //121
+					set.push(parseInt(indiDataAll[j][indiKeys[i]]));
+				}
+				dataSet.push(set);
+				set = [];
+			}
+	        $scope.chart = Highcharts.chart('chartsContainer', {
+	        	chart: {
+   					//borderColor: '#D3D3D3',
+   					//borderWidth: 2
+				},
+	    		xAxis: {
+	    			categories: $scope.formattedDates,
+	       			//tickInterval: 5
+	    		},
+	    		title: {
+    				text: indicatorName
+				},
+				subtitle: {
+    				text: '<a href="https://www.alphavantage.co/" target="_blank">Source: Alpha Vantage</a>',       
+    				useHTML: true
+				},
+				yAxis: [{
+				
+				    title: {
+				        text: $scope.chartsExpression
+				    },   
+				}],
+				legend: {
+			        //layout: 'vertical',
+			        //align: 'right',
+			        //verticalAlign: 'middle'
+			    },
+			    plotOptions: {
+			        // series: {
+			        //     marker: {
+			        //         enabled: true,
+			        //         symbol: 'square',
+			        //         radius: 3
+			        //     }				            	
+			        // }       
+			    },
+	    		// series: [{
+	      //   		data: smaArr,
+	      //   		name: symbolName,
+	      //   		color: '#FF0000'
+	    		// },]					
+				});
+	        console.log(dataSet);
+	        for (var i = 0; i < dataSet.length; i++) {
+	        	$scope.chart.addSeries({
+					data: dataSet[i],
+					name: $scope.quoteStockName+" "+indiKeys[i]
+				})	
+	        }
+							
+		}
+	}
+
+	
 
 	$scope.searchTextChange = function(text) {
 		// console.log(text);
