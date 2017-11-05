@@ -8,7 +8,6 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		$scope.disabled = true;
 		$scope.showDetail = false;
 		$scope.quoted = false;
-		$scope.indiCalled = false;
 		$scope.records = ["Symbol", "Stock Price", "Change (Change Percent)", "Volume"];
 		$scope.sortChoices = ["Default", "Symbol", "Stock Price", "Change", "Change Percent", "Volume"];
 		$scope.priceIndicators = ["Price", "SMA", "EMA", "STOCH", "RSI", "ADX", "CCI", "BBANDS", "MACD"];
@@ -97,9 +96,12 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			$scope.chartsInfo["Price"] = res.data;
 			$scope.csDetails = submit;
 			$scope.quoted = true;
-			$scope.changeIndi($scope.chartsExpression);
+			if ($scope.chartsExpression == $scope.priceIndicators[0]) {
+				$scope.changeIndi($scope.chartsExpression);
+			}
 		});
 		
+<<<<<<< HEAD
 		// var startIndex = 1; //introduce delay to optimize API call frequency
 		// var seqRequest = function(startIndex){
 		// 	if (startIndex + 1 <= $scope.priceIndicators.length) {
@@ -116,6 +118,24 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		// $timeout(seqRequest(startIndex), 200);
 
 
+=======
+		var startIndex = 1; //introduce delay to optimize API call frequency
+		var seqRequest = function(startIndex){
+			if (startIndex + 1 <= $scope.priceIndicators.length) {
+				var paramsIndicator = {symbol: $scope.quoteStockName, function: $scope.priceIndicators[startIndex], interval: "daily", time_period: 10, series_type: "close"};
+				$http.get(URL, {params: paramsIndicator}).then(function(res) {
+					$scope.chartsInfo[$scope.priceIndicators[startIndex]] = res.data;
+					if ($scope.chartsExpression == $scope.priceIndicators[startIndex]) {
+						$scope.changeIndi($scope.chartsExpression);
+					}	
+				});	
+				seqRequest(startIndex+1);
+			} else {
+				console.log($scope.chartsInfo);
+			}
+		}
+		seqRequest(startIndex);
+>>>>>>> 593acfd26f607e1937cf01eaf1c2456b981511c7
 		console.log($scope.datesCollection);
 	};
 
