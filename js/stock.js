@@ -44,6 +44,10 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		$scope.quoteStockName = $scope.searchText;
 		$scope.showDetail = true;
 		$scope.quoted = false;
+		$scope.datesCollection = [];
+		$scope.formattedDates =[];
+		$scope.closePrice = [];
+		$scope.volumeData = [];
 		// $scope.chartsInfo = {"null", "null", "null", "null", "null", "null", "null", "null", "null"};
 		$scope.chartsInfo = {};
 		URL = preURL+"/stock/query";
@@ -62,7 +66,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 				var dates  = $scope.datesCollection[i];
 				var formatted = (dates.split('-').join('/')).substring(5,10);
 				$scope.formattedDates.push(formatted);
-				$scope.closePrice.push(parseInt(timeSeriesDaily[i]["4. close"]));
+				$scope.closePrice.push(parseFloat(timeSeriesDaily[i]["4. close"]));
 				$scope.volumeData.push(parseInt(timeSeriesDaily[i]["5. volume"]));
 			}			
 			console.log($scope.closePrice);
@@ -134,6 +138,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			    },
 			    xAxis: {
 			        categories: $scope.formattedDates,
+			        //showLastLabel: true
 			        //tickInterval: 5
 			    },
 			    title: {
@@ -211,7 +216,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			var set = [];
 			for (var i = 0; i < indiKeys.length; i++) { //1-3
 				for (var j = 0; j < indiDataAll.length; j++) { //121
-					set.push(parseInt(indiDataAll[j][indiKeys[i]]));
+					set.push(parseFloat(indiDataAll[j][indiKeys[i]]));
 				}
 				dataSet.push(set);
 				set = [];
