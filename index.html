@@ -128,7 +128,7 @@
               <td></td>
             </tr>
             <tr ng-repeat="stock in stockDetails">
-              <td>{{stock.symbol}}</td>
+              <td ng-click="getQuote()">{{stock.symbol}}</td>
               <td>{{stock.close}}</td>
               <td>{{stock.change}} {{stock.changePercent}}</td>
               <td>{{stock.volume}}</td>

@@ -101,7 +101,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			}
 		});
 		
-		var startIndex = 1; //introduce delay to optimize API call frequency
+		var startIndex = 1;
 		var seqRequest = function(startIndex){
 			if (startIndex + 1 <= $scope.priceIndicators.length) {
 				var paramsIndicator = {symbol: $scope.quoteStockName, function: $scope.priceIndicators[startIndex], interval: "daily", time_period: 10, series_type: "close"};
@@ -112,11 +112,10 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 					}	
 				});	
 				seqRequest(startIndex+1);
-			} else {
-				console.log($scope.chartsInfo);
-			}
+			} 
 		}
 		seqRequest(startIndex);
+		console.log($scope.chartsInfo);
 		console.log($scope.datesCollection);
 	};
 
@@ -208,7 +207,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		var indiEntry = "Technical Analysis: "+$scope.chartsExpression;
 		if ($scope.chartsInfo[$scope.chartsExpression]) {
 			var indiData = $scope.chartsInfo[$scope.chartsExpression];
-			var indicatorName = indiData["2: Indicator"];
+			var indicatorName = indiData["Meta Data"]["2: Indicator"];
 			var tecAnalysis = indiData[indiEntry];
 			var indiKeys = Object.keys(tecAnalysis[$scope.datesCollection[0]]);
 			for (var i = 120; i >=0; i--) {
