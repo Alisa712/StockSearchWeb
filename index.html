@@ -76,7 +76,7 @@
 <!--             <input type="text" class="form-control" ng-model="selectedStock" data-animation="am-flip-x" bs-options="symbol.show for symbol in getStock($viewValue)" placeholder="e.g. AAPL" bs-typeahead> -->
           </div>
           <div class="col-sm-3">
-            <button type="button" class="btn btn-primary" ng-disabled="disabled" ng-click="getQuote()"><i class="glyphicon glyphicon-search"></i>Get Quote</button>
+            <button type="button" class="btn btn-primary" ng-disabled="disabled" ng-click="getQuote(searchText)"><i class="glyphicon glyphicon-search"></i>Get Quote</button>
             <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-refresh" ng-click="clear()"></i>Clear</button>           
           </div>
         </div>   
@@ -128,7 +128,7 @@
               <td></td>
             </tr>
             <tr ng-repeat="stock in stockDetails">
-              <td ng-click="getQuote()">{{stock.symbol}}</td>
+              <td ng-click="getQuote(stock.symbol)">{{stock.symbol}}</td>
               <td>{{stock.close}}</td>
               <td>{{stock.change}} {{stock.changePercent}}</td>
               <td>{{stock.volume}}</td>

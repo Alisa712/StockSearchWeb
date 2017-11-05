@@ -39,8 +39,9 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		//TODO: implement clear function here
 	};
 
-	$scope.getQuote = function() {
-		$scope.quoteStockName = $scope.searchText;
+	$scope.getQuote = function(stockSearch) {
+		$scope.quoteStockName = stockSearch;
+		//$scope.quoteStockName = $scope.searchText;
 		$scope.showDetail = true;
 		$scope.quoted = false;
 		$scope.datesCollection = [];
