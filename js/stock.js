@@ -101,24 +101,6 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			}
 		});
 		
-<<<<<<< HEAD
-		// var startIndex = 1; //introduce delay to optimize API call frequency
-		// var seqRequest = function(startIndex){
-		// 	if (startIndex + 1 <= $scope.priceIndicators.length) {
-		// 		var paramsIndicator = {symbol: $scope.quoteStockName, function: $scope.priceIndicators[startIndex], interval: "daily", time_period: 10, series_type: "close"};
-		// 		$http.get(URL, {params: paramsIndicator}).then(function(res) {
-		// 			$scope.chartsInfo[$scope.priceIndicators[startIndex]] = res.data;
-		// 			$timeout(seqRequest(startIndex+1), 200);
-		// 			$scope.indiCalled = true;	
-		// 		});	
-		// 	} else {
-		// 		console.log($scope.chartsInfo);
-		// 	}
-		// }
-		// $timeout(seqRequest(startIndex), 200);
-
-
-=======
 		var startIndex = 1; //introduce delay to optimize API call frequency
 		var seqRequest = function(startIndex){
 			if (startIndex + 1 <= $scope.priceIndicators.length) {
@@ -135,7 +117,6 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			}
 		}
 		seqRequest(startIndex);
->>>>>>> 593acfd26f607e1937cf01eaf1c2456b981511c7
 		console.log($scope.datesCollection);
 	};
 
