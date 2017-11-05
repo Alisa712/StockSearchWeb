@@ -40,6 +40,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 	};
 
 	$scope.getQuote = function(stockSearch) {
+		$scope.expression = "cs";
 		$scope.quoteStockName = stockSearch;
 		//$scope.quoteStockName = $scope.searchText;
 		$scope.showDetail = true;
@@ -48,6 +49,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		$scope.formattedDates =[];
 		$scope.closePrice = [];
 		$scope.volumeData = [];
+		$scope.csDetails = {};
 		// $scope.chartsInfo = {"null", "null", "null", "null", "null", "null", "null", "null", "null"};
 		$scope.chartsInfo = {};
 		URL = preURL+"/stock/query";
@@ -118,6 +120,9 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		seqRequest(startIndex);
 		console.log($scope.chartsInfo);
 		console.log($scope.datesCollection);
+		
+		$scope.getNews(stockSearch);
+
 	};
 
 	
@@ -316,7 +321,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 				submit['close'] = temp["4. close"];
 				submit['volume'] = temp["5. volume"];
 				submit['change'] = (temp["4. close"] - temp["1. open"]).toFixed(2);
-				submit['changePercent'] = (submit['change']/temp["1. open"]).toFixed(2);
+				submit['changePercent'] = (submit['change']/temp["1. open"] * 100).toFixed(2);
 				$scope.stockDetails[stock] = submit;
 				$window.localStorage.setItem('favorite', JSON.stringify($scope.stockDetails));
 			});
@@ -328,11 +333,22 @@ function mainControl($scope, $http, $interval, $window, $timeout){
     	var params = {input: searchText};
     	return $http.get(URL, {params: params})
     	.then(function(res) {
-    	console.log(res);
-    	for (var i=0; i<res.data.length; i++) {
-    		res.data[i]["show"] = res.data[i]["Symbol"]+" - "+res.data[i]["Name"]+" ("+res.data[i]["Exchange"]+")"; 
-    	}
-      	return res.data;
-    });
-  };
+	    	console.log(res);
+	    	for (var i=0; i<res.data.length; i++) {
+	    		res.data[i]["show"] = res.data[i]["Symbol"]+" - "+res.data[i]["Name"]+" ("+res.data[i]["Exchange"]+")"; 
+	    	}
+	      	return res.data;
+    	});
+  	};
+
+	$scope.getNews = function(stockNews) {
+		$scope.newsData = [];
+	  	URL = preURL+"/stock/news";
+	  	var params = {SYMBOL: stockNews};
+		$http.get(URL, {params: params}).then(function(res) {
+			console.log(res);
+			$scope.newsData = res.data;
+			console.log($scope.newsData);
+		});
+	}
 }

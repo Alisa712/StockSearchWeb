@@ -1,18 +1,15 @@
-.well{
-	background-color: white;
-	border-radius: 10px !important;	
+#whiteWell1{
+	background: white; 
+	border-radius: 10px; 
 	padding-top: 16px;
 }
-.greyLine{
-	
+#whiteWell2{
+	background: white; 
+	border-radius: 10px; 
+	padding-top: 16px;
+}
+.greyLine{	
 	color: grey !important;	
 	height: 1px;
 }
-/*div {
-  transition: all linear 0.5s;
-  position: relative;
-}
 
-.ng-hide {
-  left: 500px;
-}*/

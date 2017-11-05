@@ -51,7 +51,7 @@
 <body ng-controller="myController" ng-init="init()" background="./img/background.png">
   <div class="container">
     <br>
-      <div class="well">
+      <div class="well" id="whiteWell1">
         <h4 class="text-center">Stock Market Search</h4>
         <div class="row">
           <div class="col-sm-3">
@@ -82,7 +82,7 @@
         </div>   
       </div>
     <hr>
-    <div class="well">
+    <div class="well" id="whiteWell2">
       <div class="panel panel-default"  ng-hide="showDetail">
       <!-- Favourite List -->
       <div class="panel-heading">
@@ -128,10 +128,10 @@
               <td></td>
             </tr>
             <tr ng-repeat="stock in stockDetails">
-              <td ng-click="getQuote(stock.symbol)">{{stock.symbol}}</td>
-              <td>{{stock.close}}</td>
-              <td>{{stock.change}} {{stock.changePercent}}</td>
-              <td>{{stock.volume}}</td>
+              <td ng-click="getQuote(stock.symbol)"><a href="">{{stock.symbol}}</a></td>
+              <td>{{stock.close | number : 2}}</td>
+              <td style="color: {{stock.change > 0 ? upColor : downColor}}">{{stock.change}}&nbsp({{stock.changePercent}}%)<img ng-src="{{stock.change > 0 ? './img/Up.png' : './img/Down.png'}}" width="20"></td>
+              <td>{{stock.volume | number : fractionSize}}</td>
               <td><button ng-click="changeFav(stock.symbol)" class="btn btn-default">Delete</button></td>
             </tr>
         </table>
@@ -240,6 +240,12 @@
         <div ng-show="expression=='hc'"> <!-- Tab for Historical Chart -->
         </div>
         <div ng-show="expression=='nf'"> <!-- Tab for News Feed -->
+          <div class="well" ng-repeat="news in newsData">
+            <a href="{{news.link}}">{{news.title}}</a>
+            <br><br>
+            <p><b>Author:&nbsp{{news["author_name"]}}</b></p>
+            <p><b>Date:&nbsp{{news.pubDate.substring(0, 26)+" EDT"}}<p><b>
+          </div>
         </div>       
       </div>
       </div>
