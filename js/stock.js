@@ -50,6 +50,8 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		$scope.closePrice = [];
 		$scope.volumeData = [];
 		$scope.csDetails = {};
+		
+
 		// $scope.chartsInfo = {"null", "null", "null", "null", "null", "null", "null", "null", "null"};
 		$scope.chartsInfo = {};
 		URL = preURL+"/stock/query";
@@ -58,11 +60,15 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			//console.log(res);
 			var timeSeriesDaily = [];
 			var timeSet = res.data["Time Series (Daily)"];
+			
+
 
 			angular.forEach(timeSet, function(value, key) {
 			  	this.push(value);
 			  	$scope.datesCollection.push(key);
 			}, timeSeriesDaily);
+
+			
 
 			for (var i = 120; i >= 0; i--) {
 				var dates  = $scope.datesCollection[i];
@@ -71,8 +77,8 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 				$scope.closePrice.push(parseFloat(timeSeriesDaily[i]["4. close"]));
 				$scope.volumeData.push(parseInt(timeSeriesDaily[i]["5. volume"]));
 			}			
-			console.log($scope.closePrice);
-			console.log($scope.volumeData);
+			
+
 			var previousDate = timeSeriesDaily[1];
 			var currentDateTemp = res.data["Meta Data"]["3. Last Refreshed"];
 			var closedTime = "16:00:00"; 
@@ -92,9 +98,11 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			if (currentDateTemp.length == 10 || (currentDateTemp.indexOf(closedTime) !== -1)) {
 				submit['close'] = temp["4. close"]; //already closed today
 				submit['timestamp'] = currentDate + " " + closedTime + " EDT"; //EDT?
+				$scope.newestDate = currentDate;
 			} else {
 				submit['close'] = previousDate["4. close"]; // today not closed yet
 				submit['timestamp'] = currentDateTemp + " EDT"; //EDT?
+				$scope.newestDate = currentDateTemp;
 			}
 			$scope.chartsInfo["Price"] = res.data;
 			$scope.csDetails = submit;
@@ -213,14 +221,20 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		var indiEntry = "Technical Analysis: "+$scope.chartsExpression;
 		if ($scope.chartsInfo[$scope.chartsExpression]) {
 			var indiData = $scope.chartsInfo[$scope.chartsExpression];
+			console.log(indiData);
 			var indicatorName = indiData["Meta Data"]["2: Indicator"];
 			var tecAnalysis = indiData[indiEntry];
-			var indiKeys = Object.keys(tecAnalysis[$scope.datesCollection[0]]);
-			for (var i = 120; i >=0; i--) {
+			console.log(tecAnalysis);
+			var indiKeys = Object.keys(tecAnalysis[$scope.newestDate]);
+			console.log(indiKeys);
+			for (var i = 120; i >0; i--) {
 				var indiDate = $scope.datesCollection[i]; //2017-11-03
 				var indiValues = tecAnalysis[indiDate];				
 				indiDataAll.push(indiValues);
 			}
+			var newestIndiValues = tecAnalysis[$scope.newestDate];
+			indiDataAll.push(newestIndiValues);
+			
 			var set = [];
 			for (var i = 0; i < indiKeys.length; i++) { //1-3
 				for (var j = 0; j < indiDataAll.length; j++) { //121
@@ -277,8 +291,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 					data: dataSet[i],
 					name: $scope.quoteStockName+" "+indiKeys[i]
 				})	
-	        }
-							
+	        }							
 		}
 	}
 
