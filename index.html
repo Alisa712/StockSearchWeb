@@ -37,7 +37,7 @@
   <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
 
-  <script src="https://code.highcharts.com/highcharts.src.js"></script> 
+  <script src="https://code.highcharts.com/stock/highstock.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
 
 <!-- <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script> -->
@@ -238,6 +238,7 @@
           </div>
         </div>
         <div ng-show="expression=='hc'"> <!-- Tab for Historical Chart -->
+          <div id="hisContainer"></div>
         </div>
         <div ng-show="expression=='nf'"> <!-- Tab for News Feed -->
           <div class="well" ng-repeat="news in newsData">

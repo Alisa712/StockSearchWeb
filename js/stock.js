@@ -16,6 +16,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		$scope.formattedDates =[];
 		$scope.closePrice = [];
 		$scope.volumeData = [];
+		$scope.hisData =[];
 		$scope.selectSortBy = $scope.sortChoices[0];
 		$scope.orderChoices = ["Ascending", "Descending"];
 		$scope.selectOrderBy = $scope.orderChoices[0];
@@ -49,6 +50,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		$scope.formattedDates =[];
 		$scope.closePrice = [];
 		$scope.volumeData = [];
+		$scope.hisData =[];
 		$scope.csDetails = {};
 		
 
@@ -78,6 +80,11 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 				$scope.volumeData.push(parseInt(timeSeriesDaily[i]["5. volume"]));
 			}			
 			
+			for (var i = 999; i >= 0; i--) { //1000 data 
+				var hisDate = new Date($scope.datesCollection[i]);
+				$scope.hisData.push([hisDate.getTime(), parseFloat(timeSeriesDaily[i]["4. close"])]);
+			}
+			console.log($scope.hisData[0]);
 
 			var previousDate = timeSeriesDaily[1];
 			var currentDateTemp = res.data["Meta Data"]["3. Last Refreshed"];
@@ -110,6 +117,8 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			if ($scope.chartsExpression == $scope.priceIndicators[0]) {
 				$scope.changeIndi($scope.chartsExpression);
 			}
+			$scope.getNews(stockSearch);
+			$scope.drawHis();
 		});
 		
 		var startIndex = 1;
@@ -128,9 +137,6 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		seqRequest(startIndex);
 		console.log($scope.chartsInfo);
 		console.log($scope.datesCollection);
-		
-		$scope.getNews(stockSearch);
-
 	};
 
 	
@@ -295,6 +301,65 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		}
 	}
 
+	$scope.drawHis = function() {
+		    // Create the chart
+		// console.log($scope.hisData[0]);
+	    $scope.hisChart = Highcharts.stockChart('hisContainer', {
+	        chart: {
+	            //height: 400
+	        },
+
+	        title: {
+	            text: $scope.quoteStockName+" "+"Stock Value",
+	        },
+
+	        subtitle: {
+	            text: '<a href="https://www.alphavantage.co/" target="_blank">Source: Alpha Vantage</a>',       
+    			useHTML: true
+	        },
+
+	        rangeSelector: {
+	        	selected: 0,
+                buttons: [{
+                    type: 'week',
+                    count: 1,
+                    text: '1w',
+                }, {
+                    type: 'month',
+                    count: 1,
+                    text: '1m',
+                }, {
+                    type: 'month',
+                    count: 3,
+                    text: '3m'
+                }, {
+                    type: 'month',
+                    count: 6,
+                    text: '6m'
+                }, {
+                    type: 'ytd',
+                    text: 'YTD'
+                }, {
+                    type: 'year',
+                    count: 1,
+                    text: '1y'
+                }, {
+                    type: 'all',
+                    text: 'All'
+                }]
+            },
+
+	        series: [{
+	            name: 'Stock Value',
+	            data: $scope.hisData,
+	            type: 'area',
+	            threshold: null,
+	            tooltip: {
+	                valueDecimals: 2
+	            }
+	        }],
+	    });
+	}
 	
 
 	$scope.searchTextChange = function(text) {
