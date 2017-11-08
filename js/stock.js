@@ -1,9 +1,9 @@
 var preURL = "http://localhost:3000";
 
-var app = angular.module("myModule", ['ngAnimate','ngSanitize','ngMaterial']);
+var app = angular.module("myModule", ['ngAnimate','ngSanitize','ngMaterial','ui.toggle']);
 app.controller("myController", mainControl);
 
-function mainControl($scope, $http, $interval, $window, $timeout){
+function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 	$scope.init = function(){
 		$scope.disabled = true;
 		$scope.showDetail = false;
@@ -11,6 +11,8 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 
 		$scope.reverse = false;
 		$scope.property = null;
+
+		//$scope.isRefreshing = false;
 
 		$scope.records = ["Symbol", "Stock Price", "Change (Change Percent)", "Volume"];
 		$scope.sortChoices = ["Default", "Symbol", "Stock Price", "Change", "Change Percent", "Volume"];
@@ -125,9 +127,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			$scope.chartsInfo["Price"] = res.data;
 			$scope.csDetails = submit;
 			$scope.quoted = true;
-			if ($scope.chartsExpression == $scope.priceIndicators[0]) {
-				$scope.changeIndi($scope.chartsExpression);
-			}
+
 
 			var startIndex = 1;
 			var seqRequest = function(startIndex){
@@ -143,6 +143,11 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 				}
 
 			}
+
+			if ($scope.chartsExpression == $scope.priceIndicators[0]) {
+				$scope.changeIndi($scope.chartsExpression);
+			}
+
 			seqRequest(startIndex);
 			$scope.getNews(stockSearch);
 			$scope.drawHis();
@@ -394,8 +399,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			$scope.stockDetails[stockName] = {};
 			$scope.refresh();
 		}
-		$scope.sortBy();
-		
+		$scope.sortBy();	
 	}
 
 	$scope.refresh = function() {
@@ -419,6 +423,28 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		});
 	}
 
+	// var stop;
+	// $scope.autoRefresh = function(isRefreshing) {
+	// 	$scope.isRefreshing = isRefreshing;
+	// 	if ($scope.isRefreshing == true) {
+	// 		stop = $interval(function() {
+	// 			$scope.refresh();
+	// 		}, 5000);
+	// 	}
+	// 	if ($scope.isRefreshing == false) {
+	// 		$interval.cancel(stop);
+	// 		stop = undefined;
+	// 	}
+	// 	console.log("refresh called");
+	// }
+
+	setInterval(function() { 
+	    if($scope.isRefreshing){
+	      $scope.refresh();
+	      console.log("refresh called");
+	    }
+	 }, 5000);
+
   	$scope.getStock = function(searchText) {
   		URL = preURL+"/autocomplete"
     	var params = {input: searchText};
@@ -441,8 +467,9 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 			console.log(res);
 			$scope.newsData = res.data;
 			console.log($scope.newsData);
+			$scope.newsQuoted = true;
 		});
-		$scope.newsQuoted = true;
+		
 	}
 
 	$scope.convStockDeatils = function() {
@@ -472,7 +499,7 @@ function mainControl($scope, $http, $interval, $window, $timeout){
 		if ($scope.selectSortBy == "Change Percent") {$scope.property = "changePercent";}
 		if ($scope.selectSortBy == "Volume") {$scope.property = "volume";} 
 	    $scope.reverse = ($scope.selectOrderBy == "Descending") ? true : false;
-	    console.log($scope.reverse);
+	    //console.log($scope.reverse);
   	};
 
 }
