@@ -9,8 +9,6 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		$scope.showDetail = false;
 		$scope.quoted = false;
 
-		$scope.error = false;
-
 		$scope.reverse = false;
 		$scope.property = null;
 
@@ -50,20 +48,20 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 
 
 	//try fb init
-	// $window.fbAsyncInit = function() {
-	//     FB.init({ 
-	//       //appId: '{your-app-id}',
-	//       status: true, 
-	//       cookie: true, 
-	//       xfbml: true,
-	//       version: 'v2.4'
-	//     });
-	// };
- //    (function() {
- //        var e = document.createElement('script'); e.async = true;
- //        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
- //        document.getElementById('fb-root').appendChild(e);
- //    }());
+	$window.fbAsyncInit = function() {
+	    FB.init({ 
+	      //appId: '{your-app-id}',
+	      status: true, 
+	      cookie: true, 
+	      xfbml: true,
+	      version: 'v2.4'
+	    });
+	};
+    (function() {
+        var e = document.createElement('script'); e.async = true;
+        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+        document.getElementById('fb-root').appendChild(e);
+    }());
 
 
 
@@ -79,79 +77,78 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		//$scope.quoteStockName = $scope.searchText;
 		$scope.showDetail = true;
 		$scope.quoted = false;
-		$scope.newsError = false;
 		$scope.datesCollection = [];
 		$scope.formattedDates =[];
 		$scope.closePrice = [];
 		$scope.volumeData = [];
 		$scope.hisData =[];
-		$scope.chartsInfo = {};
+
+		
+
 		$scope.csDetails = {};
-		$scope.errorInfo = {};
 		
 
 		// $scope.chartsInfo = {"null", "null", "null", "null", "null", "null", "null", "null", "null"};
-		
+		$scope.chartsInfo = {};
 		URL = preURL+"/stock/query";
 		var params = {symbol: $scope.quoteStockName, function: "TIME_SERIES_DAILY", outputsize: "full"};
 		$http.get(URL, {params: params}).then(function(res) {
-			try{
-				var timeSeriesDaily = [];
-				var timeSet = res.data["Time Series (Daily)"]; // error would occur
-				angular.forEach(timeSet, function(value, key) {
-				  	this.push(value);
-				  	$scope.datesCollection.push(key);
-				}, timeSeriesDaily);
+			//console.log(res);
+			var timeSeriesDaily = [];
+			var timeSet = res.data["Time Series (Daily)"];
+			
 
-				
 
-				for (var i = 120; i >= 0; i--) {
-					var dates  = $scope.datesCollection[i];
-					var formatted = (dates.split('-').join('/')).substring(5,10);
-					$scope.formattedDates.push(formatted);
-					$scope.closePrice.push(parseFloat(timeSeriesDaily[i]["4. close"]));
-					$scope.volumeData.push(parseInt(timeSeriesDaily[i]["5. volume"]));
-				}			
-				
-				for (var i = 999; i >= 0; i--) { //1000 data 
-					var hisDate = new Date($scope.datesCollection[i]);
-					$scope.hisData.push([hisDate.getTime(), parseFloat(timeSeriesDaily[i]["4. close"])]);
-				}
-				console.log($scope.hisData[0]);
+			angular.forEach(timeSet, function(value, key) {
+			  	this.push(value);
+			  	$scope.datesCollection.push(key);
+			}, timeSeriesDaily);
 
-				var previousDate = timeSeriesDaily[1];
-				var currentDateTemp = res.data["Meta Data"]["3. Last Refreshed"];
-				var closedTime = "16:00:00"; 
-				var currentDate = currentDateTemp.substring(0, 10); //yyyy-mm-dd
-				var temp = timeSet[currentDate];
-				var submit = {};
-				submit['symbol'] = $scope.quoteStockName;
-				submit['volume'] = temp["5. volume"];
-				submit['change'] = (temp["4. close"] - previousDate["4. close"]).toFixed(2);
-				submit['changePercent'] = (submit['change']/previousDate["4. close"] * 100).toFixed(2);
-				//submit['timestamp'] = currentDateTemp + " EDT"; //EDT?
-				submit['open'] = temp["1. open"];
-				submit['low'] = temp["3. low"];
-				submit['high'] = temp["2. high"];
-				submit['lastPrice'] = temp["4. close"];
+			
 
-				if (currentDateTemp.length == 10 || (currentDateTemp.indexOf(closedTime) !== -1)) {
-					submit['close'] = temp["4. close"]; //already closed today
-					submit['timestamp'] = currentDate + " " + closedTime + " EDT"; //EDT?
-					$scope.newestDate = currentDate;
-				} else {
-					submit['close'] = previousDate["4. close"]; // today not closed yet
-					submit['timestamp'] = currentDateTemp + " EDT"; //EDT?
-					$scope.newestDate = currentDateTemp;
-				}
-				$scope.chartsInfo["Price"] = res.data;
-				$scope.csDetails = submit;
-				$scope.quoted = true;
+			for (var i = 120; i >= 0; i--) {
+				var dates  = $scope.datesCollection[i];
+				var formatted = (dates.split('-').join('/')).substring(5,10);
+				$scope.formattedDates.push(formatted);
+				$scope.closePrice.push(parseFloat(timeSeriesDaily[i]["4. close"]));
+				$scope.volumeData.push(parseInt(timeSeriesDaily[i]["5. volume"]));
+			}			
+			
+			for (var i = 999; i >= 0; i--) { //1000 data 
+				var hisDate = new Date($scope.datesCollection[i]);
+				$scope.hisData.push([hisDate.getTime(), parseFloat(timeSeriesDaily[i]["4. close"])]);
 			}
-			catch(e){
-				$scope.error = true;
-				$scope.errorInfo['Price'] = true;
+			console.log($scope.hisData[0]);
+
+			var previousDate = timeSeriesDaily[1];
+			var currentDateTemp = res.data["Meta Data"]["3. Last Refreshed"];
+			var closedTime = "16:00:00"; 
+			var currentDate = currentDateTemp.substring(0, 10); //yyyy-mm-dd
+			var temp = timeSet[currentDate];
+			var submit = {};
+			submit['symbol'] = $scope.quoteStockName;
+			submit['volume'] = temp["5. volume"];
+			submit['change'] = (temp["4. close"] - temp["1. open"]).toFixed(2);
+			submit['changePercent'] = (submit['change']/temp["1. open"] * 100).toFixed(2);
+			//submit['timestamp'] = currentDateTemp + " EDT"; //EDT?
+			submit['open'] = temp["1. open"];
+			submit['low'] = temp["3. low"];
+			submit['high'] = temp["2. high"];
+			submit['lastPrice'] = temp["4. close"];
+
+			if (currentDateTemp.length == 10 || (currentDateTemp.indexOf(closedTime) !== -1)) {
+				submit['close'] = temp["4. close"]; //already closed today
+				submit['timestamp'] = currentDate + " " + closedTime + " EDT"; //EDT?
+				$scope.newestDate = currentDate;
+			} else {
+				submit['close'] = previousDate["4. close"]; // today not closed yet
+				submit['timestamp'] = currentDateTemp + " EDT"; //EDT?
+				$scope.newestDate = currentDateTemp;
 			}
+			$scope.chartsInfo["Price"] = res.data;
+			$scope.csDetails = submit;
+			$scope.quoted = true;
+
 
 			var startIndex = 1;
 			var seqRequest = function(startIndex){
@@ -194,7 +191,7 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 	$scope.drawPrice = function() {
 		var priceData = $scope.chartsInfo['Price'];
 		if (priceData) {
-			$scope.option1 = {					
+				$scope.chart = Highcharts.chart('chartsContainer', {
 			    chart: {
 			       //borderColor: '#D3D3D3',
 			       //borderWidth: 2
@@ -225,6 +222,11 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 			        //max: volumeMax * 6,
 			        opposite: true
 			    }],
+			    legend: {
+			        //layout: 'vertical',
+			        //align: 'right',
+			        //verticalAlign: 'middle'
+			    },
 			    plotOptions: {
 			        area: {
 			        	tooltip:{
@@ -249,9 +251,9 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 			        data: $scope.volumeData,
 			        color: '#FF0000',
 			        yAxis: 1
+
 			    }, ]
-			};			
-			$scope.chart = Highcharts.chart('chartsContainer', $scope.option1);
+			});			
 		} else {
 			//code to show error bar and message
 		}
@@ -264,85 +266,76 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		var addCall = $scope.chartsExpression;
 		var indiEntry = "Technical Analysis: "+$scope.chartsExpression;
 		if ($scope.chartsInfo[$scope.chartsExpression]) {
-			try{
-				var indiData = $scope.chartsInfo[$scope.chartsExpression];
-				console.log(indiData);
-				var indicatorName = indiData["Meta Data"]["2: Indicator"];
-				var tecAnalysis = indiData[indiEntry];
-				console.log(tecAnalysis);
-				if (tecAnalysis[$scope.newestDate]) {
-					var indiKeys = Object.keys(tecAnalysis[$scope.newestDate]);
-					console.log(indiKeys);
-					for (var i = 120; i >0; i--) {
-						var indiDate = $scope.datesCollection[i]; //2017-11-03
-						var indiValues = tecAnalysis[indiDate];				
-						indiDataAll.push(indiValues);
+			var indiData = $scope.chartsInfo[$scope.chartsExpression];
+			console.log(indiData);
+			var indicatorName = indiData["Meta Data"]["2: Indicator"];
+			var tecAnalysis = indiData[indiEntry];
+			console.log(tecAnalysis);
+			if (tecAnalysis[$scope.newestDate]) {
+				var indiKeys = Object.keys(tecAnalysis[$scope.newestDate]);
+				console.log(indiKeys);
+				for (var i = 120; i >0; i--) {
+					var indiDate = $scope.datesCollection[i]; //2017-11-03
+					var indiValues = tecAnalysis[indiDate];				
+					indiDataAll.push(indiValues);
+				}
+				var newestIndiValues = tecAnalysis[$scope.newestDate];
+				indiDataAll.push(newestIndiValues);
+				
+				var set = [];
+				for (var i = 0; i < indiKeys.length; i++) { //1-3
+					for (var j = 0; j < indiDataAll.length; j++) { //121
+						set.push(parseFloat(indiDataAll[j][indiKeys[i]]));
 					}
-					var newestIndiValues = tecAnalysis[$scope.newestDate];
-					indiDataAll.push(newestIndiValues);
+					dataSet.push(set);
+					set = [];
+				}
+		        $scope.chart = Highcharts.chart('chartsContainer', {
+		        	chart: {
+		        		zoomType: 'x',
+	   					//borderColor: '#D3D3D3',
+	   					//borderWidth: 2
+					},
+		    		xAxis: {
+		    			categories: $scope.formattedDates,
+		       			//tickInterval: 5
+		    		},
+		    		title: {
+	    				text: indicatorName
+					},
+					subtitle: {
+	    				text: '<a href="https://www.alphavantage.co/" target="_blank">Source: Alpha Vantage</a>',       
+	    				useHTML: true
+					},
+					yAxis: [{
 					
-					var set = [];
-					for (var i = 0; i < indiKeys.length; i++) { //1-3
-						for (var j = 0; j < indiDataAll.length; j++) { //121
-							set.push(parseFloat(indiDataAll[j][indiKeys[i]]));
-						}
-						dataSet.push(set);
-						set = [];
-					}
-
-
-					$scope.option2 = {
-						chart: {
-			        		zoomType: 'x',
-		   					//borderColor: '#D3D3D3',
-		   					//borderWidth: 2
-						},
-			    		xAxis: {
-			    			categories: $scope.formattedDates,
-			       			//tickInterval: 5
-			    		},
-			    		title: {
-		    				text: indicatorName
-						},
-						subtitle: {
-		    				text: '<a href="https://www.alphavantage.co/" target="_blank">Source: Alpha Vantage</a>',       
-		    				useHTML: true
-						},
-						yAxis: [{
-						
-						    title: {
-						        text: $scope.chartsExpression
-						    },   
-						}],
-						legend: {
-					        //layout: 'vertical',
-					        //align: 'right',
-					        //verticalAlign: 'middle'
-					    },
-					    plotOptions: {
-					        // series: {
-					        //     marker: {
-					        //         enabled: true,
-					        //         symbol: 'square',
-					        //         radius: 3
-					        //     }				            	
-					        // }       
-					    },				
-					};
-			        $scope.chart = Highcharts.chart('chartsContainer', $scope.option2);
-		        	console.log(dataSet);
-		        	for (var i = 0; i < dataSet.length; i++) {
-		        		$scope.chart.addSeries({
-						data: dataSet[i],
-						name: $scope.quoteStockName+" "+indiKeys[i]
-						})	
-			        }       						
-				} 
-				console.log($scope.chart);
-			}
-			catch(e){
-				$scope.errorInfo[$scope.chartsExpression] = true;
-			}
+					    title: {
+					        text: $scope.chartsExpression
+					    },   
+					}],
+					legend: {
+				        //layout: 'vertical',
+				        //align: 'right',
+				        //verticalAlign: 'middle'
+				    },
+				    plotOptions: {
+				        // series: {
+				        //     marker: {
+				        //         enabled: true,
+				        //         symbol: 'square',
+				        //         radius: 3
+				        //     }				            	
+				        // }       
+				    },				
+				});
+	        	console.log(dataSet);
+	        	for (var i = 0; i < dataSet.length; i++) {
+	        		$scope.chart.addSeries({
+					data: dataSet[i],
+					name: $scope.quoteStockName+" "+indiKeys[i]
+					})	
+		        }       						
+			} 
 		} //end of if 
 	}
 
@@ -437,20 +430,14 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 			$http.get(URL, {params: params}).then(function(res) {
 				console.log(res);
 				var currentDateTemp = res.data["Meta Data"]["3. Last Refreshed"];
-				var timeDaily = res.data["Time Series (Daily)"];
-				var dayBeforeTemp = [];
-				angular.forEach(timeDaily, function(value, key) {
-				  	dayBeforeTemp.push(value);
-				});
-				var dayBefore = dayBeforeTemp[1];
 				var currentDate = currentDateTemp.substring(0, 10); //yyyy-mm-dd
-				var temp = timeDaily[currentDate];
+				var temp = res.data["Time Series (Daily)"][currentDate];
 				var submit = {};
 				submit['symbol'] = stock;
 				submit['close'] = temp["4. close"];
 				submit['volume'] = temp["5. volume"];
-				submit['change'] = (temp["4. close"] - dayBefore["4. close"]).toFixed(2);
-				submit['changePercent'] = (submit['change']/dayBefore["4. close"] * 100).toFixed(2);
+				submit['change'] = (temp["4. close"] - temp["1. open"]).toFixed(2);
+				submit['changePercent'] = (submit['change']/temp["1. open"] * 100).toFixed(2);
 				$scope.stockDetails[stock] = submit;
 				$window.localStorage.setItem('favorite', JSON.stringify($scope.stockDetails));
 			});
@@ -498,13 +485,10 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 	  	URL = preURL+"/stock/news";
 	  	var params = {SYMBOL: stockNews};
 		$http.get(URL, {params: params}).then(function(res) {
-			if (res.data == "newsError") {
-				$scope.newsError = true;
-			} else {
-				$scope.newsData = res.data;
-				$scope.newsQuoted = true;				
-			}
-
+			console.log(res);
+			$scope.newsData = res.data;
+			console.log($scope.newsData);
+			$scope.newsQuoted = true;
 		});
 		
 	}
@@ -540,38 +524,21 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
   	};
 
 	$scope.shareFB = function() {
-		var exportUrl = 'http://export.highcharts.com/';
-		var optionStr = "";
-		if ($scope.chartsExpression == "Price") {
-			 optionStr = JSON.stringify($scope.option1);
-		} else {
-			 optionStr = JSON.stringify($scope.option2);
-		}
-		//var dataString = encodeURI('async=true&type=png&options=' + optionStr);
-		var params = {async: true, type: "image/png", options: optionStr};
-		//console.log(optionStr);	
-		//console.log(params);	
-
-        $http({
-            url: exportUrl,
-            method: "POST",
-            data: params
-        }).then(function (res) {
-        	$scope.urlFB = res.data;
-        	console.log($scope.urlFB);
-		    FB.ui({
-		    	appId: '1955986657996915',
-		        method: 'feed',
-		        picture: exportUrl+$scope.urlFB
-		        //caption: 'Reference Documentation',
-		        //description: 'Dialogs provide a simple, consistent interface for applications to interface with users.'
-		    }, (response) => {
-			   if (response && !response.error_message) {
-			    $window.alert("Posted Successfully");
-			   } else {
-			    $window.alert("fail");
-			   }
-		    });
-        });
+	    FB.ui({
+	        method: 'feed',
+	        name: 'Facebook Dialogs',
+	        link: 'https://developers.facebook.com/docs/dialogs/',
+	        picture: 'http://fbrell.com/f8.jpg',
+	        caption: 'Reference Documentation',
+	        description: 'Dialogs provide a simple, consistent interface for applications to interface with users.'
+	    }, (response) => {
+		   if (response && !response.error_message) {
+		    console.log("succeed");
+		   } else {
+		    onsole.log("fail");
+		   }
+	    });
 	};
+
+
 }

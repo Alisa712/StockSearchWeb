@@ -54,6 +54,33 @@
 
 </head>
 <body ng-controller="myController" ng-init="init()" background="./img/background.png">
+
+
+
+
+
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '1955986657996915',
+        xfbml      : true,
+        version    : 'v2.11'
+      });
+      FB.AppEvents.logPageView();
+    };
+
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "https://connect.facebook.net/en_US/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
+  </script>  
+
+
+
+
   <div class="container">
     <br>
       <div class="well" id="whiteWell1">
@@ -137,7 +164,7 @@
             <tr ng-repeat="stock in arrStocks | orderBy:property:reverse">
               <td ng-click="getQuote(stock.symbol)"><a href="">{{stock.symbol}}</a></td>
               <td>{{stock.close | number : 2}}</td>
-              <td style="color: {{stock.change > 0 ? upColor : downColor}}">{{stock.change}}&nbsp({{stock.changePercent}}%)<img ng-src="{{stock.change > 0 ? './img/Up.png' : './img/Down.png'}}" width="20"></td>
+              <td style="color: {{stock.change >= 0 ? upColor : downColor}}">{{stock.change}}&nbsp({{stock.changePercent | number : 2}}%)<img ng-src="{{stock.change > 0 ? './img/Up.png' : './img/Down.png'}}" width="20"></td>
               <td>{{stock.volume | number : fractionSize}}</td>
               <td><button ng-click="changeFav(stock.symbol)" class="btn btn-default">Delete</button></td>
             </tr>
@@ -172,7 +199,7 @@
                 <div class="col-sm-6"></div>
                 <div class="col-sm-3">
                   <button class="btn btn-default" ng-click="changeFav(searchText)" ng-disabled="!quoted"><i ng-class="!stockDetails[searchText] ? 'glyphicon glyphicon-star-empty' : 'glyphicon glyphicon-star'"></i></button>
-                  <button class="btn btn-default" ng-disabled="!quoted"><img ng-src="./img/facebook.png" width=15 height=15></button>
+                  <button class="btn btn-default" ng-disabled="!quoted" ng-click="shareFB()"><img ng-src="./img/facebook.png" width=15 height=15></button>
                 </div>
               </div>
             </div>
@@ -186,13 +213,18 @@
           </div>
           <div class="row">
             <div class="col-sm-6">
-            <div ng-hide="quoted">
-            <br><br>
-            <div class="progress"><!-- left side progress bar -->
-              <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+            <div ng-hide="quoted || error">
+              <br><br>
+              <div class="progress"><!-- left side progress bar -->
+                <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+                </div>
               </div>
             </div>
-          </div>
+          <div class="alert alert-danger" role="alert" ng-show="error"> <!-- left side error -->
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="sr-only">Error:</span>
+            Enter a valid email address
+          </div>          
           <div ng-show="quoted">
             <table class="table table-striped">
               <tr>
@@ -231,35 +263,50 @@
           </div>
           </div>
           <div class="col-sm-6">
-              <div ng-hide="chartsInfo[chartsExpression] != null">
-              <br><br>               
+              <div ng-hide="chartsInfo[chartsExpression] != null || errorInfo[chartsExpression]">
+                <br><br>               
                 <div class="progress"><!-- rigth side progress bar -->
                   <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
                   </div>
                 </div>
               </div>
-              <div ng-show="chartsInfo[chartsExpression] != null" id="chartsContainer"><!-- draw highcharts -->               
+              <div class="alert alert-danger" role="alert" ng-show="errorInfo[chartsExpression]"> <!-- right side error -->
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span>
+                Enter a valid email address
+              </div>               
+              <div ng-show="chartsInfo[chartsExpression] != null && !errorInfo[chartsExpression]" id="chartsContainer"><!-- draw highcharts -->              
               </div>             
           </div>
           </div>
         </div>
         <div ng-show="expression=='hc'"> <!-- Tab for Historical Chart -->
-          <div ng-hide="hisData[999]">
+          <div ng-hide="hisData[999] || error">
             <br><br>               
             <div class="progress">
               <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
               </div>
             </div>
           </div>
-          <div id="hisContainer" ng-show="hisData[999]" ></div>
+          <div class="alert alert-danger" role="alert" ng-show="error"> <!-- his error -->
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="sr-only">Error:</span>
+            his error
+          </div>         
+          <div id="hisContainer" ng-show="hisData[999] && !error" ></div>
         </div>
         <div ng-show="expression=='nf'"> <!-- Tab for News Feed -->
-          <div ng-hide="newsQuoted">
+          <div ng-hide="newsQuoted || newsError">
             <br><br>               
             <div class="progress">
               <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
               </div>
             </div>
+          </div>
+          <div class="alert alert-danger" role="alert" ng-show="newsError"> <!-- news error -->
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="sr-only">Error:</span>
+            news error
           </div>
           <div ng-show="newsQuoted" class="well" ng-repeat="news in newsData">
             <a href="{{news.link}}">{{news.title}}</a>
