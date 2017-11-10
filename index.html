@@ -291,6 +291,7 @@
           </div>
         </div>
         <div ng-show="expression=='hc'"> <!-- Tab for Historical Chart -->
+          <div class='row'>
           <div ng-hide="hisData[999] || error">
             <br><br>               
             <div class="progress">
@@ -302,6 +303,7 @@
             Error! Failed to get historical charts data
           </div>         
           <div id="hisContainer" ng-show="hisData[999] && !error" ></div>
+          </div>
         </div>
         <div ng-show="expression=='nf'"> <!-- Tab for News Feed -->
           <div ng-hide="newsQuoted || newsError">
