@@ -47,7 +47,7 @@ app.get('/stock/news',function(req, res){
 			parseString(body, function (err, result) {
 				var cleanData = [];
 				var items = result.rss.channel[0]['item'];
-				for (var i=0, j=0; i<items.length; i++) {
+				for (var i=0, j=0; i<items.length && j<5; i++) {
 					if (/Article/.test(items[i]['guid'][0]['_'])) {
 						cleanData[j] = {
 							title: items[i]['title'][0],
@@ -74,6 +74,7 @@ app.get('/autocomplete', function(req, res){
 		res.send(body);
 	});
 })
+
 
 console.log("Server starting on PORT: "+PORT);
 //app.listen(PORT)

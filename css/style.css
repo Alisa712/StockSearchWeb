@@ -2,6 +2,61 @@ html{
 	background-image: url(http://cs-server.usc.edu:45678/hw/hw8/images/background.png);
 	background-size: cover;
 }
+/*.animate-enter, 
+.animate-leave
+{ 
+    -webkit-transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -moz-transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -ms-transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    -o-transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+    transition: 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+} */
+ 
+/*.panel-default.ng-hide-add {
+	transform: rotateY(90deg);
+	transform-origin: left;
+	transition: all 0.5s ease;
+}*/
+
+.panel-default.right.ng-hide-remove {
+	transform: translate(-900px, 0px);
+	transform-origin: right;
+	transition: all 0.7s ease;
+}
+
+.panel-default.right.ng-hide-remove-active {
+	transform: translate(0px, 0px);
+}
+
+.panel-default.left.ng-hide-remove {
+	transform: translate(900px, 0px);
+	transform-origin: left;
+	transition: all 0.7s ease;
+}
+
+.panel-default.left.ng-hide-remove-active {
+	transform: translate(0px, 0px);
+}
+
+md-autocomplete md-progress-linear{
+	display: none;
+}
+
+md-autocomplete-wrap button {
+	display: none;
+}
+
+md-autocomplete.red {
+	outline: 3px rgba(255, 0, 0, .9) solid;
+}
+
+.md-virtual-repeat-scroller {
+	overflow: hidden;
+}
+
+.myStar{
+	color: #FDE16D !important;
+}
 
 
 #whiteWell1{
@@ -18,4 +73,5 @@ html{
 	color: grey !important;	
 	height: 1px;
 }
+
 

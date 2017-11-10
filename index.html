@@ -80,6 +80,7 @@
 
 
 
+<form name="stockForm">
 
   <div class="container">
     <br>
@@ -92,15 +93,20 @@
           <div class="col-sm-6">
             <!-- <input type="number" class="form-control" ng-model="myInterval"> -->
 
-          <md-autocomplete 
+          <md-autocomplete
+
+            required 
             md-no-cache="true" 
             md-selected-item="selectedItem" 
             md-items="item in getStock(searchText)" 
             md-search-text="searchText" 
             md-item-text="item.Symbol"
             md-search-text-change="searchTextChange(searchText)" 
-            md-search-text="searchText"
+            md-clear-button="false"
+            md-input-maxlength="10"
+            md-input-name="changeColor"
             placeholder="e.g. AAPL"
+            ng-class="{red: stockForm.changeColor.$touched && stockForm.changeColor.$invalid}"
             >
             <span>{{ item.show }}</span>
           </md-autocomplete>
@@ -109,13 +115,14 @@
           </div>
           <div class="col-sm-3">
             <button type="button" class="btn btn-primary" ng-disabled="disabled" ng-click="getQuote(searchText)"><i class="glyphicon glyphicon-search"></i>Get Quote</button>
-            <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-refresh" ng-click="clear()"></i>Clear</button>           
+            <button type="button" class="btn btn-default" ng-click="clear()""><i class="glyphicon glyphicon-refresh"></i>Clear</button>           
           </div>
         </div>   
       </div>
+    </form>
     <hr>
     <div class="well" id="whiteWell2">
-      <div class="panel panel-default"  ng-hide="showDetail">
+      <div class="panel panel-default left"  ng-hide="showDetail">
       <!-- Favourite List -->
       <div class="panel-heading">
           <div class="row">
@@ -166,12 +173,12 @@
               <td>{{stock.close | number : 2}}</td>
               <td style="color: {{stock.change >= 0 ? upColor : downColor}}">{{stock.change}}&nbsp({{stock.changePercent | number : 2}}%)<img ng-src="{{stock.change > 0 ? './img/Up.png' : './img/Down.png'}}" width="20"></td>
               <td>{{stock.volume | number : fractionSize}}</td>
-              <td><button ng-click="changeFav(stock.symbol)" class="btn btn-default">Delete</button></td>
+              <td><button ng-click="changeFav(stock.symbol)" class="glyphicon glyphicon-trash"></button></td>
             </tr>
         </table>
       </div>
       </div>
-      <div class="panel panel-default"  ng-show="showDetail">
+      <div class="panel panel-default right"  ng-show="showDetail">
       <div class="panel-heading">
         <div class="row">
            <div class="col-sm-1">
@@ -198,7 +205,7 @@
                 </div>
                 <div class="col-sm-6"></div>
                 <div class="col-sm-3">
-                  <button class="btn btn-default" ng-click="changeFav(searchText)" ng-disabled="!quoted"><i ng-class="!stockDetails[searchText] ? 'glyphicon glyphicon-star-empty' : 'glyphicon glyphicon-star'"></i></button>
+                  <button class="btn btn-default" ng-click="changeFav(searchText)" ng-disabled="!quoted"><span ng-class="!stockDetails[searchText] ? 'glyphicon glyphicon-star-empty' : 'glyphicon glyphicon-star myStar'"></span></button>
                   <button class="btn btn-default" ng-disabled="!quoted" ng-click="shareFB()"><img ng-src="./img/facebook.png" width=15 height=15></button>
                 </div>
               </div>
@@ -214,18 +221,20 @@
           <div class="row">
             <div class="col-sm-6">
             <div ng-hide="quoted || error">
-              <br><br>
-              <div class="progress"><!-- left side progress bar -->
-                <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+              <!-- <br><br> -->
+              <div>
+                <br><br>
+                <div class="progress"><!-- left side progress bar -->
+                  <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+                  </div>
                 </div>
-              </div>
             </div>
+            </div>
+          <br><br>
           <div class="alert alert-danger" role="alert" ng-show="error"> <!-- left side error -->
-            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-            <span class="sr-only">Error:</span>
-            Enter a valid email address
+            Error! Failed to get current stock data
           </div>          
-          <div ng-show="quoted">
+          <div ng-show="quoted && !error">
             <table class="table table-striped">
               <tr>
                 <td><b>Stock Ticker Symbol</b></td>
@@ -270,10 +279,9 @@
                   </div>
                 </div>
               </div>
+              <br><br>
               <div class="alert alert-danger" role="alert" ng-show="errorInfo[chartsExpression]"> <!-- right side error -->
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                <span class="sr-only">Error:</span>
-                Enter a valid email address
+                Error! Failed to get {{chartsExpression}} data
               </div>               
               <div ng-show="chartsInfo[chartsExpression] != null && !errorInfo[chartsExpression]" id="chartsContainer"><!-- draw highcharts -->              
               </div>             
@@ -289,9 +297,7 @@
             </div>
           </div>
           <div class="alert alert-danger" role="alert" ng-show="error"> <!-- his error -->
-            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-            <span class="sr-only">Error:</span>
-            his error
+            Error! Failed to get historical charts data
           </div>         
           <div id="hisContainer" ng-show="hisData[999] && !error" ></div>
         </div>
@@ -304,11 +310,9 @@
             </div>
           </div>
           <div class="alert alert-danger" role="alert" ng-show="newsError"> <!-- news error -->
-            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-            <span class="sr-only">Error:</span>
-            news error
+            Error! Failed to get news feed data
           </div>
-          <div ng-show="newsQuoted" class="well" ng-repeat="news in newsData">
+          <div ng-show="newsQuoted && !newsError" class="well" ng-repeat="news in newsData">
             <a href="{{news.link}}">{{news.title}}</a>
             <br><br>
             <p><b>Author:&nbsp{{news["author_name"]}}</b></p>
