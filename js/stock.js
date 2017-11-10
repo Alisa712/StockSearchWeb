@@ -74,6 +74,7 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		$scope.searchText = "";
 		$scope.selectedItem = "";
 		$scope.showDetail = false;
+		$scope.disabled = true;
 	};
 
 	$scope.getQuote = function(stockSearch) {
