@@ -1,4 +1,4 @@
-var preURL = "http://shuhuihe571hw8-env.us-east-2.elasticbeanstalk.com/";
+var preURL = "http://shuhuihe571hw8-env.us-east-2.elasticbeanstalk.com";
 
 var app = angular.module("myModule", ['ngAnimate','ngSanitize','ngMaterial','ui.toggle']);
 app.controller("myController", mainControl);
