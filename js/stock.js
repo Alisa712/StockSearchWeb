@@ -14,6 +14,8 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		$scope.reverse = false;
 		$scope.property = null;
 
+
+
 		//$scope.isRefreshing = false;
 
 		$scope.records = ["Symbol", "Stock Price", "Change (Change Percent)", "Volume"];
@@ -71,10 +73,13 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 
 	$scope.clear = function() {
 		//TODO: implement clear function here
+		$scope.cleared = true;
 		$scope.searchText = "";
 		$scope.selectedItem = "";
 		$scope.showDetail = false;
+		$scope.redMark = false;
 		$scope.disabled = true;
+		// $scope.init();
 	};
 
 	$scope.getQuote = function(stockSearch) {
@@ -85,6 +90,7 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		$scope.quoted = false;
 		$scope.newsError = false;
 		$scope.error = false;
+		$scope.redMark = false;
 		$scope.datesCollection = [];
 		$scope.formattedDates =[];
 		$scope.closePrice = [];
@@ -117,8 +123,7 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 					$scope.closePrice.push(parseFloat(timeSeriesDaily[i]["4. close"]));
 					$scope.volumeData.push(parseInt(timeSeriesDaily[i]["5. volume"]));
 				}			
-				
-				for (var i = 999; i >= 0; i--) { //1000 data 
+				for (var i = Math.min(999, $scope.datesCollection.length-1); i >= 0; i--) { //1000 data 
 					var hisDate = new Date($scope.datesCollection[i]);
 					$scope.hisData.push([hisDate.getTime(), parseFloat(timeSeriesDaily[i]["4. close"])]);
 				}
@@ -206,6 +211,7 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 			       //borderColor: '#D3D3D3',
 			       //borderWidth: 2
 			       zoomType: 'x',
+			       height: 300
 			    },
 			    xAxis: {
 			        categories: $scope.formattedDates,
@@ -313,6 +319,7 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 			        		zoomType: 'x',
 		   					//borderColor: '#D3D3D3',
 		   					//borderWidth: 2
+		   					height: 300
 						},
 			    		xAxis: {
 			    			categories: $scope.formattedDates,
@@ -443,11 +450,19 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 	$scope.searchTextChange = function(text) {
 		// console.log(text);
 		// console.log(text.split("\\s+").length);
-		if(text.length == 0 || text.split("\\s+").length == 0){
-			$scope.disabled = true;
+		console.log("Text changed!");
+		if(!$scope.cleared) {
+			if(!text || text.length == 0 || text.trim().length == 0){
+				$scope.disabled = true;
+				$scope.redMark = true;
+			} else {
+				$scope.disabled = false;
+				$scope.redMark = false;
+			}
 		} else {
-			$scope.disabled = false;
+			$scope.cleared = false;
 		}
+
 		// console.log("disabled", $scope.disabled);
 	}
 
@@ -500,16 +515,20 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 	 }, 5000);
 
   	$scope.getStock = function(searchText) {
-  		URL = preURL+"/autocomplete"
-    	var params = {input: searchText};
-    	return $http.get(URL, {params: params})
-    	.then(function(res) {
-	    	console.log(res);
-	    	for (var i=0; i<res.data.length; i++) {
-	    		res.data[i]["show"] = res.data[i]["Symbol"]+" - "+res.data[i]["Name"]+" ("+res.data[i]["Exchange"]+")"; 
-	    	}
-	      	return res.data;
-    	});
+  		if(!$scope.redMark){
+  			URL = preURL+"/autocomplete"
+	    	var params = {input: searchText};
+	    	return $http.get(URL, {params: params})
+	    	.then(function(res) {
+		    	console.log(res);
+		    	for (var i=0; i<res.data.length; i++) {
+		    		res.data[i]["show"] = res.data[i]["Symbol"]+" - "+res.data[i]["Name"]+" ("+res.data[i]["Exchange"]+")"; 
+		    	}
+		      	return res.data;
+	    	});
+  		} else {
+  			return {};
+  		}
   	};
 
 	$scope.getNews = function(stockNews) {

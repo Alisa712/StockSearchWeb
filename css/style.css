@@ -2,6 +2,12 @@ html{
 	background-image: url(http://cs-server.usc.edu:45678/hw/hw8/images/background.png);
 	background-size: cover;
 }
+
+
+
+/*select {
+	-moz-appearance: button-arrow-down;
+}*/
 /*.animate-enter, 
 .animate-leave
 { 
@@ -47,7 +53,11 @@ md-autocomplete-wrap button {
 }
 
 md-autocomplete.red {
-	outline: 3px rgba(255, 0, 0, .9) solid;
+	/*outline: 3px rgba(255, 0, 0, .9) solid;*/
+	/*border-radius: 5px;*/
+	box-shadow: 0 0 2pt 1pt red;
+/*	border-radius: 10px !important;*/
+
 }
 
 .md-virtual-repeat-scroller {
@@ -56,6 +66,10 @@ md-autocomplete.red {
 
 .myStar{
 	color: #FDE16D !important;
+	font-size: 1.8em;
+}
+.myEmpStar{
+	font-size: 1.8em;
 }
 
 

@@ -20,7 +20,24 @@ app.use(function(req, res, next) {
 });
 
 
+app.use('/', express.static('./'));
 
+var requestTime = function(times, url, query, res) {
+	console.log('Request Remaining', times);
+	request({url:url, qs:query}, function(err, response, body) {
+			if (response.statusCode != 200 || Object.keys(body).length < 3) {
+				console.log("Failed request to Query server", query);
+				if (times - 1 > 0) {
+					requestTime(times-1, url, query, res);
+				} else {
+					res.send({});
+				}
+			} else {
+				console.log("Received Query Length",Object.keys(body).length);
+				res.send(body);
+			}
+	});
+}
 
 // stock quote
 app.get('/stock/query',function(req, res){
@@ -28,13 +45,21 @@ app.get('/stock/query',function(req, res){
 	url = 'https://www.alphavantage.co/query';
 	APIKEY = 'KKYKI5DCNNT4HBVX';
 	req.query['apikey'] = APIKEY;
-	request({url:url, qs:req.query}, function(err, response, body) {
-		if (response.statusCode == 200) {
-			res.send(body);
-		} else {
-			res.send({});
-		}		
-	});
+	// var tried = 0;
+	// for(; tried < 3 && !res.headersSent; tried++) {
+	// 	request({url:url, qs:req.query}, function(err, response, body) {
+	// 		if (response.statusCode != 200 || JSON.stringify(body) === '{}' ) {
+	// 			console.log("Failed request to Query server");
+	// 		} else {
+	// 			res.send(body);
+	// 		}
+	// 	});
+	// }
+	// if (tried == 3) {
+	// 	res.send({});
+	// }
+	requestTime(3, url, req.query, res);
+
 });
 
 // get news
