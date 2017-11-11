@@ -6,13 +6,8 @@ var request = require('request');
 var app = express();
 var PORT = process.env.PORT || 3000;
 
-// //assuming app is express Object.
-// app.get('/',function(req,res){       
-//   res.sendFile('./index.html');
-// });
 
-
-// allow CROS
+// allow CORS
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -22,6 +17,7 @@ app.use(function(req, res, next) {
 
 app.use('/', express.static('./'));
 
+//if request failed, try two more times
 var requestTime = function(times, url, query, res) {
 	console.log('Request Remaining', times);
 	request({url:url, qs:query}, function(err, response, body) {
@@ -41,33 +37,20 @@ var requestTime = function(times, url, query, res) {
 
 // stock quote
 app.get('/stock/query',function(req, res){
-	//console.log(req.query);
+
 	url = 'https://www.alphavantage.co/query';
 	APIKEY = 'KKYKI5DCNNT4HBVX';
 	req.query['apikey'] = APIKEY;
-	// var tried = 0;
-	// for(; tried < 3 && !res.headersSent; tried++) {
-	// 	request({url:url, qs:req.query}, function(err, response, body) {
-	// 		if (response.statusCode != 200 || JSON.stringify(body) === '{}' ) {
-	// 			console.log("Failed request to Query server");
-	// 		} else {
-	// 			res.send(body);
-	// 		}
-	// 	});
-	// }
-	// if (tried == 3) {
-	// 	res.send({});
-	// }
+
 	requestTime(3, url, req.query, res);
 
 });
 
 // get news
 app.get('/stock/news',function(req, res){
-	//console.log(req.query);
+
 	url = 'https://seekingalpha.com/api/sa/combined/';
-	request({url:url+req.query['SYMBOL']+".xml"}, function(err, response, body) {
-		//console.log(typeof body);		
+	request({url:url+req.query['SYMBOL']+".xml"}, function(err, response, body) {		
 		if (response.statusCode == 200) {
 			parseString(body, function (err, result) {
 				var cleanData = [];

@@ -1,22 +1,16 @@
-var preURL = "http://localhost:3000";
+var preURL = "http://shuhuihe571hw8-env.us-east-2.elasticbeanstalk.com";
 
 var app = angular.module("myModule", ['ngAnimate','ngSanitize','ngMaterial','ui.toggle']);
 app.controller("myController", mainControl);
 
-function mainControl($scope, $http, $interval, $window, $timeout, $interval){
+function mainControl($scope, $http, $interval, $window, $timeout, $interval) {
 	$scope.init = function(){
 		$scope.disabled = true;
 		$scope.showDetail = false;
 		$scope.quoted = false;
-
 		$scope.error = false;
-
 		$scope.reverse = false;
 		$scope.property = null;
-
-
-
-		//$scope.isRefreshing = false;
 
 		$scope.records = ["Symbol", "Stock Price", "Change (Change Percent)", "Volume"];
 		$scope.sortChoices = ["Default", "Symbol", "Stock Price", "Change", "Change Percent", "Volume"];
@@ -27,10 +21,9 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		$scope.closePrice = [];
 		$scope.volumeData = [];
 		$scope.hisData =[];
-
 		$scope.arrStocks = [];
 
-		$scope.selectSortBy = $scope.sortChoices[0];
+		$scope.selectSortBy = $scope.sortChoices[0]; //default
 		$scope.orderChoices = ["Ascending", "Descending"];
 		$scope.selectOrderBy = $scope.orderChoices[0];
 		$scope.expression = "cs"; //current stock
@@ -39,53 +32,30 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		$scope.downColor = "red";
 		$scope.upColor = "green";
 
-		// $window.localStorage.removeItem("favorite");
+
 		if ($window.localStorage.getItem("favorite") === null){
 			$window.localStorage.setItem('favorite', JSON.stringify($scope.stockDetails));
 		} else {
 			$scope.stockDetails = JSON.parse($window.localStorage.getItem("favorite"));
 		}
 		$scope.refresh();
-		console.log($scope.stockDetails);
-		console.log($scope.chartsExpression);
 	};
 
-
-	//try fb init
-	// $window.fbAsyncInit = function() {
-	//     FB.init({ 
-	//       //appId: '{your-app-id}',
-	//       status: true, 
-	//       cookie: true, 
-	//       xfbml: true,
-	//       version: 'v2.4'
-	//     });
-	// };
- //    (function() {
- //        var e = document.createElement('script'); e.async = true;
- //        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
- //        document.getElementById('fb-root').appendChild(e);
- //    }());
-
-
-
-
-
-	$scope.clear = function() {
-		//TODO: implement clear function here
+	//clear text field and errors
+	$scope.clear = function() { 
 		$scope.cleared = true;
 		$scope.searchText = "";
 		$scope.selectedItem = "";
 		$scope.showDetail = false;
 		$scope.redMark = false;
 		$scope.disabled = true;
+		$scope.quoted = false;
 		// $scope.init();
 	};
 
 	$scope.getQuote = function(stockSearch) {
 		$scope.expression = "cs";
 		$scope.quoteStockName = stockSearch;
-		//$scope.quoteStockName = $scope.searchText;
 		$scope.showDetail = true;
 		$scope.quoted = false;
 		$scope.newsError = false;
@@ -100,9 +70,6 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		$scope.csDetails = {};
 		$scope.errorInfo = {};
 		
-
-		// $scope.chartsInfo = {"null", "null", "null", "null", "null", "null", "null", "null", "null"};
-		
 		URL = preURL+"/stock/query";
 		var params = {symbol: $scope.quoteStockName, function: "TIME_SERIES_DAILY", outputsize: "full"};
 		$http.get(URL, {params: params}).then(function(res) {
@@ -113,8 +80,6 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 				  	this.push(value);
 				  	$scope.datesCollection.push(key);
 				}, timeSeriesDaily);
-
-				
 
 				for (var i = 120; i >= 0; i--) {
 					var dates  = $scope.datesCollection[i];
@@ -127,7 +92,6 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 					var hisDate = new Date($scope.datesCollection[i]);
 					$scope.hisData.push([hisDate.getTime(), parseFloat(timeSeriesDaily[i]["4. close"])]);
 				}
-				console.log($scope.hisData[0]);
 
 				var previousDate = timeSeriesDaily[1];
 				var currentDateTemp = res.data["Meta Data"]["3. Last Refreshed"];
@@ -139,7 +103,6 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 				submit['volume'] = temp["5. volume"];
 				submit['change'] = (temp["4. close"] - previousDate["4. close"]).toFixed(2);
 				submit['changePercent'] = (submit['change']/previousDate["4. close"] * 100).toFixed(2);
-				//submit['timestamp'] = currentDateTemp + " EDT"; //EDT?
 				submit['open'] = temp["1. open"];
 				submit['low'] = temp["3. low"];
 				submit['high'] = temp["2. high"];
@@ -159,11 +122,11 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 				$scope.quoted = true;
 			}
 			catch(e){
-				console.log(e);
 				$scope.error = true;
 				$scope.errorInfo['Price'] = true;
 			}
 
+			//call all indicators
 			var startIndex = 1;
 			var seqRequest = function(startIndex){
 				if (startIndex + 1 <= $scope.priceIndicators.length) {
@@ -187,14 +150,10 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 			$scope.getNews(stockSearch);
 			$scope.drawHis();
 		});
-		console.log($scope.selectSortBy);
-		//$window.localStorage.clear();
 	};
-
 	
 	$scope.changeIndi = function(indiName) {
 		$scope.chartsExpression = indiName;
-		//console.log($scope.chartsExpression);
 		if ($scope.chartsExpression == 'Price') {
 			$scope.drawPrice();
 		} else {
@@ -208,15 +167,11 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		if (priceData) {
 			$scope.option1 = {					
 			    chart: {
-			       //borderColor: '#D3D3D3',
-			       //borderWidth: 2
 			       zoomType: 'x',
 			       height: 300
 			    },
 			    xAxis: {
 			        categories: $scope.formattedDates,
-			        //showLastLabel: true
-			        //tickInterval: 5
 			    },
 			    title: {
 			        text: $scope.quoteStockName+" "+"Stock Price and Volume",
@@ -225,17 +180,14 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 			        text: '<a href="https://www.alphavantage.co/" target="_blank">Source: Alpha Vantage</a>',       
 			        useHTML: true
 			    },
-			    yAxis: [{
-			    	
+			    yAxis: [{			    	
 			        title: {
 			            text: 'Stock Price'
-			        },
-			        //min: minValue * 0.9      
+			        },     
 			    }, {
 			        title: {
 			            text: 'Volume'
 			        },
-			        //max: volumeMax * 6,
 			        opposite: true
 			    }],
 			    plotOptions: {
@@ -245,8 +197,7 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 			    		},
 			            marker: {
 			                enabled: false
-			            },
-			            //threshold: null		
+			            },		
 			        }       
 			    },
 			    series: [{
@@ -265,39 +216,25 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 			    }, ]
 			};			
 			$scope.chart = Highcharts.chart('chartsContainer', $scope.option1);
-		} else {
-			//code to show error bar and message
 		}
 	}
 
 	$scope.drawIndi = function() {
-		//$scope.chartsExpression = 'BBANDS';
 		var indiDataAll = [];
 		var dataSet = [];
 		var addCall = $scope.chartsExpression;
 		var indiEntry = "Technical Analysis: "+$scope.chartsExpression;
 		if ($scope.chartsInfo[$scope.chartsExpression]) {
-			console.log("called drawIndi");
 
 			try{
 				var indiData = $scope.chartsInfo[$scope.chartsExpression];
-				console.log(indiData);
 				var lastRefresh = indiData["Meta Data"]["3: Last Refreshed"];
-				// if (lastRefresh.length == 10) {
-
-				// }
 				var indicatorName = indiData["Meta Data"]["2: Indicator"];
 				var tecAnalysis = indiData[indiEntry];
-				//console.log(tecAnalysis);
-				//console.log($scope.newestDate);
 				if (tecAnalysis[lastRefresh]) {
-					console.log(lastRefresh);
-					console.log($scope.newestDate);
-
 					var indiKeys = Object.keys(tecAnalysis[lastRefresh]);
-					//console.log(indiKeys);
 					for (var i = 120; i >0; i--) {
-						var indiDate = $scope.datesCollection[i]; //2017-11-03
+						var indiDate = $scope.datesCollection[i]; //2017-mm-dd
 						var indiValues = tecAnalysis[indiDate];				
 						indiDataAll.push(indiValues);
 					}
@@ -313,17 +250,13 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 						set = [];
 					}
 
-
 					$scope.option2 = {
 						chart: {
 			        		zoomType: 'x',
-		   					//borderColor: '#D3D3D3',
-		   					//borderWidth: 2
 		   					height: 300
 						},
 			    		xAxis: {
 			    			categories: $scope.formattedDates,
-			       			//tickInterval: 5
 			    		},
 			    		title: {
 		    				text: indicatorName
@@ -332,62 +265,30 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		    				text: '<a href="https://www.alphavantage.co/" target="_blank">Source: Alpha Vantage</a>',       
 		    				useHTML: true
 						},
-						yAxis: [{
-						
+						yAxis: [{					
 						    title: {
 						        text: $scope.chartsExpression
 						    },   
 						}],
-						legend: {
-					        //layout: 'vertical',
-					        //align: 'right',
-					        //verticalAlign: 'middle'
-					    },
-					    plotOptions: {
-					        // series: {
-					        //     marker: {
-					        //         enabled: true,
-					        //         symbol: 'square',
-					        //         radius: 3
-					        //     }				            	
-					        // }       
-					    },
 					    series:[]		
 					};
 					for (var i = 0; i < dataSet.length; i++) {
 						$scope.option2.series.push({data: dataSet[i], name: $scope.quoteStockName+" "+indiKeys[i]});
 					}	
 			        $scope.chart = Highcharts.chart('chartsContainer', $scope.option2);
-		        	console.log(dataSet);
-		    //     	for (var i = 0; i < dataSet.length; i++) {
-		    //     		$scope.chart.addSeries({
-						// 	data: dataSet[i],
-						// 	name: $scope.quoteStockName+" "+indiKeys[i]
-						// })	
-			   //      } 
-
 				} 
-				//console.log($scope.chart);
 			}
 			catch(e){
-				console.log(e);
 				$scope.errorInfo[$scope.chartsExpression] = true;
 			}
-		} //end of if 
+		}
 	}
 
 	$scope.drawHis = function() {
-		    // Create the chart
-		// console.log($scope.hisData[0]);
 	    $scope.hisChart = Highcharts.stockChart('hisContainer', {
-	        chart: {
-	            //height: 400
-	        },
-
 	        title: {
 	            text: $scope.quoteStockName+" "+"Stock Value",
 	        },
-
 	        subtitle: {
 	            text: '<a href="https://www.alphavantage.co/" target="_blank">Source: Alpha Vantage</a>',       
     			useHTML: true
@@ -397,10 +298,9 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 	        },
 	        yAxis: {
 	        	title: {
-	        		text: "Stock Price"
+	        		text: "Stock Value"
 	        	}
 	        },
-
 	        rangeSelector: {
 	        	selected: 0,
                 buttons: [{
@@ -448,9 +348,6 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 	
 
 	$scope.searchTextChange = function(text) {
-		// console.log(text);
-		// console.log(text.split("\\s+").length);
-		console.log("Text changed!");
 		if(!$scope.cleared) {
 			if(!text || text.length == 0 || text.trim().length == 0){
 				$scope.disabled = true;
@@ -462,8 +359,6 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		} else {
 			$scope.cleared = false;
 		}
-
-		// console.log("disabled", $scope.disabled);
 	}
 
 	// favorite stocks
@@ -502,11 +397,11 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 				submit['changePercent'] = (submit['change']/dayBefore["4. close"] * 100).toFixed(2);
 				$scope.stockDetails[stock] = submit;
 				$window.localStorage.setItem('favorite', JSON.stringify($scope.stockDetails));
-				//$scope.$apply();
 			});
 		});
 	}
 
+	//automatic refresh
 	setInterval(function() { 
 	    if($scope.isRefreshing){
 	      $scope.refresh();
@@ -544,8 +439,7 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 				$scope.newsQuoted = true;				
 			}
 
-		});
-		
+		});		
 	}
 
 	$scope.convStockDeatils = function() {
@@ -559,15 +453,10 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 			$scope.arrStocks[i]["change"] = parseFloat($scope.arrStocks[i]["change"]);
 			$scope.arrStocks[i]["changePercent"] = parseFloat($scope.arrStocks[i]["changePercent"]);
 		}
-		//console.log($scope.arrStocks[0]["close"]);
-		//console.log(typeof $scope.arrStocks[0]["close"]);
-		//console.log(typeof $scope.arrStocks[0]["volume"]);
 	}
 
 	$scope.sortBy = function() {
 		$scope.convStockDeatils();
-		//$scope.reverse = false;
-		//$scope.property = null;
 		if ($scope.selectSortBy == "Default") {$scope.property = null;}
 		if ($scope.selectSortBy == "Symbol") {$scope.property = "symbol";}
 		if ($scope.selectSortBy == "Stock Price") {$scope.property = "close";}
@@ -575,7 +464,6 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		if ($scope.selectSortBy == "Change Percent") {$scope.property = "changePercent";}
 		if ($scope.selectSortBy == "Volume") {$scope.property = "volume";} 
 	    $scope.reverse = ($scope.selectOrderBy == "Descending") ? true : false;
-	    //console.log($scope.reverse);
   	};
 
 	$scope.shareFB = function() {
@@ -586,7 +474,6 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		} else {
 			 optionStr = JSON.stringify($scope.option2);
 		}
-
 		var params = {async: true, type: "image/png", options: optionStr};	
 
         $http({
@@ -600,8 +487,6 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
 		    	appId: '1955986657996915',
 		        method: 'feed',
 		        picture: exportUrl+$scope.urlFB
-		        //caption: 'Reference Documentation',
-		        //description: 'Dialogs provide a simple, consistent interface for applications to interface with users.'
 		    }, (response) => {
 			   if (response && !response.error_message) {
 			    $window.alert("Posted Successfully");
@@ -612,8 +497,6 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval){
         });
 	};
 }
-
-
 
 $ (document).ready(function () {
 	$("#input-0").addClass("form-control");

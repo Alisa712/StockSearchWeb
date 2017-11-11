@@ -5,20 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>StockSearch</title>
-  <!-- Bootstrap core CSS -->
- <!--  <link href="./css/bootstrap.min.css" rel="stylesheet"> -->
 
-  <!-- Basic Module input -->
-<!--   <script src = "./js/angular.js"></script>
-  <script src="./js/angular-animate.js"></script>
-  <script src="./js/angular-sanitize.js"></script> -->
-
-
-
-
-  <!-- <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet"> -->
   <link rel="stylesheet" type="text/css" href="./angular-bootstrap-toggle-master/dist/angular-bootstrap-toggle.min.css">
-
   <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css">
   <link href="./css/style.css" rel="stylesheet">
@@ -29,35 +17,14 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-messages.min.js"></script>
     <!-- Angular Material Library -->
   <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.js"></script>
-
- <!--  <script
-  src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous"></script> -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  
-<!--   <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script> -->
   <script src="./angular-bootstrap-toggle-master/dist/angular-bootstrap-toggle.min.js"></script>
-
   <script src="https://code.highcharts.com/stock/highstock.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
-
-
-
-
-<!-- <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script> -->
-<!--   <script src="http://mgcrea.github.io/angular-strap/dist/angular-strap.js" data-semver="v2.3.8"></script>
-  <script src="http://mgcrea.github.io/angular-strap/dist/angular-strap.tpl.js" data-semver="v2.3.8"></script> -->
-<!--   <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script> -->
-
   <script src="./js/stock.js"></script>
 
 </head>
 <body ng-controller="myController" ng-init="init()" background="./img/background.png">
-
-
-
-
 
   <script>
     window.fbAsyncInit = function() {
@@ -78,8 +45,6 @@
      }(document, 'script', 'facebook-jssdk'));
   </script>  
 
-
-
 <form name="stockForm">
 
   <div class="container">
@@ -92,7 +57,6 @@
             <h5>Enter Stock Ticker Symbol:<span class="text-danger">*</span></h5>
           </div>
           <div class="col-sm-6">
-            <!-- <input type="number" class="form-control" ng-model="myInterval"> -->
           <br>
           <md-autocomplete
             md-items="item in getStock(searchText)" 
@@ -104,17 +68,17 @@
             md-input-name="changeColor"
             placeholder="e.g. AAPL"
             ng-trim="false"
+            ng-blur="searchTextChange(searchText)"
             ng-class="{red: redMark}"
             >
             <span>{{ item.show }}</span>
           </md-autocomplete>
           <h5 ng-show="redMark">Please enter a stock ticker symbol</h5>
-<!--             <input type="text" class="form-control" ng-model="selectedStock" data-animation="am-flip-x" bs-options="symbol.show for symbol in getStock($viewValue)" placeholder="e.g. AAPL" bs-typeahead> -->
           </div>
           <div class="col-sm-3">
             <br>
             <button type="button" class="btn btn-primary" ng-disabled="disabled" ng-click="getQuote(searchText)"><i class="glyphicon glyphicon-search"></i>Get Quote</button>
-            <button type="button" class="btn btn-default" ng-click="clear()""><i class="glyphicon glyphicon-refresh"></i>Clear</button>           
+            <button type="button" class="btn btn-default" ng-click="clear()"><i class="glyphicon glyphicon-refresh"></i>Clear</button>           
           </div>
         </div>   
       </div>
@@ -129,9 +93,7 @@
             <h3 class="panel-title">Favorite List
             <div class='pull-right'>
             <p>
-<!--             <input class="text-center" type="checkbox" data-toggle="toggle" data-height="40" data-width="50" ng-model="isRrefreshing">&nbsp -->
             <toggle ng-model="isRefreshing"></toggle>&nbsp
-            <!-- <span ng-bind="testBind">{{isRefreshing}}</span>> -->
             <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-refresh" ng-click="refresh()"></i></button>
             <button type="button" class="btn btn-default" ng-disabled="!quoted" ng-click="showDetail = !showDetail"><i class="glyphicon glyphicon-chevron-right"></i></button>
             </p> 
@@ -141,20 +103,14 @@
       </div>
       <div class="panel-body">
         <div class="row">
-           <div class="col-sm-1">
-            
-            <h5>Sort by</h5>
-            
+           <div class="col-sm-1">           
+            <h5>Sort by</h5>            
           </div>          
-           <div class="col-sm-2">
-            
-            <select class="form-control" ng-model="selectSortBy" ng-options="i for i in sortChoices" ng-change="sortBy()"></select>
-            
+            <div class="col-sm-2">            
+            <select class="form-control" ng-model="selectSortBy" ng-options="i for i in sortChoices" ng-change="sortBy()"></select>            
           </div>          
-          <div class="col-sm-1">
-            
-            <h5>Order</h5>
-            
+          <div class="col-sm-1">           
+            <h5>Order</h5>            
           </div> 
           <div class="col-sm-2">           
             <select class="form-control" ng-disabled="selectSortBy == 'Default'" ng-model="selectOrderBy" ng-options="i for i in orderChoices" ng-change="sortBy()"></select>           
@@ -169,7 +125,7 @@
             <tr ng-repeat="stock in arrStocks | orderBy:property:reverse">
               <td ng-click="getQuote(stock.symbol)"><a href="">{{stock.symbol}}</a></td>
               <td>{{stock.close | number : 2}}</td>
-              <td style="color: {{stock.change >= 0 ? upColor : downColor}}">{{stock.change}}&nbsp({{stock.changePercent | number : 2}}%)<img ng-src="{{stock.change > 0 ? './img/Up.png' : './img/Down.png'}}" width="20"></td>
+              <td style="color: {{stock.change >= 0 ? upColor : downColor}}">{{stock.change | number : 2}}&nbsp({{stock.changePercent | number : 2}}%)<img ng-src="{{stock.change > 0 ? './img/Up.png' : './img/Down.png'}}" width="20"></td>
               <td>{{stock.volume | number : fractionSize}}</td>
               <td><button ng-click="changeFav(stock.symbol)" class="btn btn-default"><i class="glyphicon glyphicon-trash"></i></button></td>
             </tr>
@@ -210,7 +166,6 @@
             <div class='row'>
                 <div class="col-sm-12">
                 <div ng-hide="quoted || error">
-                  <!-- <br><br> -->
                   <div>
                     <br><br><br>
                     <div class="progress"><!-- left side progress bar -->
@@ -219,7 +174,6 @@
                     </div>
                 </div>
                 </div>
-              <!-- <br><br> -->
               <div class="alert alert-danger" role="alert" ng-show="error"> <!-- left side error -->
                 Error! Failed to get current stock data
               </div>          
@@ -264,7 +218,6 @@
               </div>
             </div>
             <div class="col-sm-6">
-
               <ul class="nav nav-tabs">
                 <li  ng-repeat="indi in priceIndicators" role="presentation" ng-class="chartsExpression==indi ? 'active' : ''" ng-click="changeIndi(indi)"><a href="">{{indi}}</a></li>
               </ul>
@@ -284,8 +237,7 @@
                 </div>
               </div>
               <div class="row">           
-                <div ng-show="chartsInfo[chartsExpression] != null && !errorInfo[chartsExpression]" id="chartsContainer"><!-- draw highcharts -->              
-                </div>             
+                <div ng-show="chartsInfo[chartsExpression] != null && !errorInfo[chartsExpression]" id="chartsContainer"></div>             
               </div>
             </div>      
             </div> 
