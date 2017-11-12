@@ -503,6 +503,3 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval) {
 	};
 }
 
-$ (document).ready(function () {
-	$("#input-0").addClass("form-control");
-});
