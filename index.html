@@ -64,12 +64,12 @@
             md-item-text="item.Symbol"
             md-search-text-change="searchTextChange(searchText)" 
             md-clear-button="false"
-            md-input-maxlength="10"
             md-input-name="changeColor"
             placeholder="e.g. AAPL"
             ng-trim="false"
-            ng-blur="searchTextChange(searchText)"
-            ng-class="{red: redMark}"
+            ng-focus="focused=true"
+            ng-blur="notFocused(searchText)"
+            ng-class="{red: redMark, blue: focused && !redMark}"
             >
             <span>{{ item.show }}</span>
           </md-autocomplete>
@@ -182,8 +182,11 @@
                     </div>
                 </div>
                 </div>
-              <div class="alert alert-danger" role="alert" ng-show="error"> <!-- left side error -->
+              <div ng-show="error">
+              <br><br><br>
+              <div class="alert alert-danger" role="alert"> <!-- left side error -->
                 Error! Failed to get current stock data
+              </div>
               </div>          
               <div ng-show="quoted && !error">
                 <br>
@@ -261,8 +264,10 @@
               </div>
             </div>
           </div>
-          <div class="alert alert-danger" role="alert" ng-show="error"> <!-- his error -->
+          <div class="col-sm-12"  ng-show="error">
+          <div class="alert alert-danger" role="alert"> <!-- his error -->
             Error! Failed to get historical charts data
+          </div>
           </div>         
           <div id="hisContainer" ng-show="hisData[0] && !error" ></div>
           </div>

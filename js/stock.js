@@ -41,6 +41,11 @@ function mainControl($scope, $http, $interval, $window, $timeout, $interval) {
 		$scope.refresh();
 	};
 
+	$scope.notFocused = function(text) {
+		$scope.focused = false;
+		$scope.searchTextChange(text);
+	}
+
 	//clear text field and errors
 	$scope.clear = function() { 
 		$scope.cleared = true;

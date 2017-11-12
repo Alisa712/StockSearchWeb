@@ -35,6 +35,11 @@ md-autocomplete.red {
 	box-shadow: 0 0 2pt 1pt red;
 }
 
+md-autocomplete.blue {
+	box-shadow: 0 0 2pt 1pt #16CDDD;
+}
+
+
 .md-virtual-repeat-scroller {
 	overflow: hidden;
 }
